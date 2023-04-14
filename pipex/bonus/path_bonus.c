@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   path.c                                             :+:      :+:    :+:   */
+/*   path_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/11 21:47:20 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/12 12:18:53 by jihyeole         ###   ########.fr       */
+/*   Created: 2023/04/14 07:55:13 by jihyeole          #+#    #+#             */
+/*   Updated: 2023/04/14 07:56:21 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 char	**get_path(char **env)
 {
@@ -55,4 +55,20 @@ char	*check_path(char **env, char *cmd)
 		++i;
 	}
 	return (NULL);
+}
+
+char	**get_exec_argv(int n, t_arg_info *arg_info)
+{
+	char	**exec_argv;
+	char	*full_path;
+	char	**path;
+
+	exec_argv = ft_split(arg_info->argv[n + 2], ' ');
+	path = get_path(arg_info->env);
+	full_path = check_path(path, exec_argv[0]);
+	if (full_path == NULL)
+		print_error("no such command in path", 1);
+	free(exec_argv[0]);
+	exec_argv[0] = full_path;
+	return (exec_argv);
 }

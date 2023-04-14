@@ -6,13 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/25 22:12:14 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/12 12:45:13 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/14 08:23:26 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
-# include "./libft/libft.h"
+# include "../libft/libft.h"
 # include <stdio.h>
 # include <fcntl.h>
 

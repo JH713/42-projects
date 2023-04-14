@@ -6,11 +6,11 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/06 02:55:14 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/12 12:43:38 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/14 08:20:42 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "../include/pipex.h"
 
 int	main(int argc, char **argv, char **env)
 {
