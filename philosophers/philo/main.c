@@ -6,11 +6,62 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 22:01:03 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/17 23:45:40 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/19 23:51:23 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+size_t	ft_strlen(const char *s)
+{
+	size_t	cnt;
+
+	cnt = 0;
+	while (*(s + cnt))
+		cnt++;
+	return (cnt);
+}	
+
+int	ft_isdigit(int c)
+{
+	if (c >= '0' && c <= '9')
+		return (1);
+	else
+		return (0);
+}
+
+int	check_num(char *num)
+{
+	while (*num)
+	{
+		if (!ft_isdigit(*num))
+			return (0);
+		num++;
+	}
+	return (1);
+}
+
+void	ft_putendl_fd(char *s, int fd)
+{
+	while (*s)
+	{
+		write(fd, s, 1);
+		s++;
+	}
+	write(fd, "\n", 1);
+}
+
+void	print_perror(char *msg)
+{
+	perror(msg);
+	exit(1);
+}
+
+void	print_error(char *msg)
+{
+	ft_putendl_fd(msg, 2);
+	exit(1);
+}
 
 static int	ft_isblank(char c)
 {
@@ -46,25 +97,83 @@ int	ft_atoi(const char *str)
 	return (result * is_positive);
 }
 
-void	*routine(void)
+int	is_positive_int(char *num)
 {
+	if (ft_strlen(num) > 10 || !check_num(num))
+		return (0);
+	if (ft_strlen(num) == 10)
+	{
+		if (*num != '1' && *num != '2')
+			return (0);
+		if (ft_atoi(num) < 0)
+			return (0);
+	}
+	if (ft_atoi(num) == 0)
+		return (0);
+	return (1);
+}
+
+int	check_and_get_int(char *str)
+{
+	if (!is_positive_int(str))
+		print_error("The arguments must be positive integers.");
+	return (ft_atoi(str));
+}
+
+t_args	check_and_store_args(int ac, char *av[])
+{
+	t_args	args;
+
+	if (ac != 5 && ac != 6)
+		print_error("Please input 4 to 5 arguments.");
+	args.phil_num = check_and_get_int(av[1]);
+	args.die_ms = check_and_get_int(av[2]);
+	args.eat_ms = check_and_get_int(av[3]);
+	args.sleep_ms = check_and_get_int(av[4]);
+	if (ac == 6)
+		args.meal_cnt = check_and_get_int(av[5]);
+	else
+		args.meal_cnt = 0;
+	return (args);
+}
+
+void	*routine(void *arg)
+{
+	if (arg)
+		return (NULL);
+	printf("1\n");
 	return (NULL);
+}
+
+void	create_threads(pthread_t **philo, int phil_num)
+{
+	int i;
+
+	*philo = (pthread_t *)malloc(sizeof(pthread_t) * phil_num);
+	if (*philo == NULL)
+		print_perror("malloc");
+	i = 0;
+	while (i < phil_num)
+	{
+		printf("i: %d\n", i);
+		if (pthread_create(philo[i], NULL, routine, NULL) != 0)
+			print_perror("pthread_create");
+		++i;
+	}
+	printf("2\n");
 }
 
 int	main(int ac, char **av)
 {
-	pthread_t	*t;
-	int			phil_num;
-	int			i;
+	t_args	args;
+	pthread_t	*philo;	
 
-	if (ac != 5 || ac != 6)
-		return (1);
-	phil_num = ft_atoi(av[1]);
-	t = (pthread_t *)malloc(sizeof(pthread_t) * phil_num);
-	i = 0;
-	while (i < phil_num)
+	args = check_and_store_args(ac, av);
+	create_threads(&philo, args.phil_num);
+	int i = 0;
+	while (i < args.phil_num)
 	{
-		pthread_create(&t[i], NULL, &routine, NULL);
+		pthread_join(philo[i], NULL);
 		++i;
 	}
 }
