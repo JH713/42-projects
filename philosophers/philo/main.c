@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 22:01:03 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/19 23:51:23 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/20 00:13:40 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -155,25 +155,58 @@ void	create_threads(pthread_t **philo, int phil_num)
 	i = 0;
 	while (i < phil_num)
 	{
-		printf("i: %d\n", i);
-		if (pthread_create(philo[i], NULL, routine, NULL) != 0)
+		if (pthread_create(&(*philo)[i], NULL, routine, NULL) != 0)
 			print_perror("pthread_create");
 		++i;
 	}
-	printf("2\n");
+}
+
+void	create_mutexs(pthread_mutex_t **fork, int phil_num)
+{
+	int	i;
+
+	*fork = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * phil_num);
+	if (*fork == NULL)
+		print_perror("malloc");
+	i = 0;
+	while (i < phil_num)
+	{
+		if (pthread_mutex_init(&(*fork)[i], NULL) != 0)
+			print_perror("pthread_mutex_init");
+		++i;
+	}
+}
+
+void	destroy_mutexs(pthread_mutex_t **fork, int phil_num)
+{
+	int	i;
+
+	i = 0;
+	while (i < phil_num)
+	{
+		if (pthread_mutex_destroy(&(*fork)[i]) != 0)
+			print_perror("pthread_mutex_destroy");
+		++i;
+	}
+	free(*fork);
+	*fork = NULL;
 }
 
 int	main(int ac, char **av)
 {
-	t_args	args;
-	pthread_t	*philo;	
+	t_args			args;
+	pthread_t		*philo;
+	pthread_mutex_t *fork;
 
 	args = check_and_store_args(ac, av);
 	create_threads(&philo, args.phil_num);
+	create_mutexs(&fork, args.phil_num);
+	
 	int i = 0;
 	while (i < args.phil_num)
 	{
 		pthread_join(philo[i], NULL);
 		++i;
 	}
+	destroy_mutexs(&fork, args.phil_num);
 }
