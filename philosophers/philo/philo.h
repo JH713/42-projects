@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 21:57:27 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/19 23:46:21 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/20 16:52:03 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdio.h>
+# include <sys/time.h>
 
 typedef struct s_args{
 	int	phil_num;
@@ -23,6 +24,13 @@ typedef struct s_args{
 	int	eat_ms;
 	int	sleep_ms;
 	int	meal_cnt;
-} t_args;
+}	t_args;
+
+typedef struct s_info{
+	int				id;
+	t_args			*args;
+	pthread_mutex_t	*fork;
+	struct timeval	*start;
+}	t_info;
 
 #endif
