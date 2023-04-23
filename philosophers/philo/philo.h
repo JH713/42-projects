@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 21:57:27 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/21 23:32:15 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/22 22:52:46 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ typedef struct s_args{
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	*msg;
 	struct timeval	start;
-	struct timeval	last_meal;
 	int				died;
 }	t_args;
 
 typedef struct s_info{
 	int				id;
+	struct timeval	last_meal;
 	t_args			*args;
 }	t_info;
 

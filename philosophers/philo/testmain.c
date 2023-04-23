@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   testmain.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 22:01:03 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/23 22:06:02 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/22 19:26:40 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 	args->fork = fork;
 	args->msg = msg;
 	args->start = start;
+	args->last_meal = start;
 	args->died = 0;
 	args->fork_available = (int *)malloc(sizeof(int) * args->phil_num);
 	memset(args->fork_available, 0, args->phil_num * sizeof(int));
@@ -92,7 +93,6 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 	i = 0;
 	while (i < args->phil_num)
 	{
-		info[i].last_meal = start;
 		info[i].id = i + 1;
 		info[i].args = args;
 		++i;
@@ -173,7 +173,7 @@ int get_passed_time_ms(t_info *info, enum e_state state)
 	start = info->args->start;
 	gettimeofday(&now, NULL);
 	if (state == EAT)
-		info->last_meal = now;
+		info->args->last_meal = now;
 	passed_time = (now.tv_sec - start.tv_sec) * 1000 + (now.tv_usec - start.tv_usec) / 1000;
 	return ((int) passed_time);
 }
@@ -182,27 +182,24 @@ void	print_msg(t_info *info, enum e_state state)
 {
 	int	passed_time;
 
+	if (info->args->died == 1)
+		return ;
 	pthread_mutex_lock(info->args->msg);
 	passed_time = get_passed_time_ms(info, state);
-	if (state == DIED)
-	{
-		printf("%d %d died\n", passed_time, info->id);
-		pthread_mutex_unlock(info->args->msg);
-		return ;
-	}
-	if (info->args->died == 1)
-	{
-		pthread_mutex_unlock(info->args->msg);
-		return ;
-	}
 	if (state == FORK)
-		printf("%d %d has taken a fork\n", passed_time, info->id);
+		printf("%dms %d has taken fork %d\n", passed_time, info->id, info->fork_num);
 	else if (state == EAT)
-		printf("%d %d is eating\n", passed_time, info->id);
+		printf("%dms %d is eating\n", passed_time, info->id);
 	else if (state == SLEEP)
-		printf("%d %d is sleeping\n", passed_time, info->id);
+		printf("%dms %d is sleeping\n", passed_time, info->id);
 	else if (state == THINK)
-		printf("%d %d is thinking\n", passed_time, info->id);
+		printf("%dms %d is thinking\n", passed_time, info->id);
+	else if (state == DIED)
+	{
+		printf("%dms %d died\n", passed_time, info->id);
+		pthread_mutex_unlock(info->args->msg);
+		return ;
+	}
 	pthread_mutex_unlock(info->args->msg);
 }
 
@@ -223,73 +220,42 @@ void	take_left_fork(t_info *info, int *flag)
 		return ;
 	}
 	info->args->fork_available[info->id - 1] = 1;
+	info->fork_num = info->id - 1;
 	take_fork(&(info->args->fork[info->id - 1]), info);
 	*flag = 1;
 }
 
 void	take_right_fork(t_info *info)
 {
-	if (info->id == info->args->phil_num)
-	{
-		info->args->fork_available[0] = 1;
-		take_fork(&(info->args->fork[0]), info);
-	}
-	else
-	{
-		info->args->fork_available[info->id] = 1;
-		take_fork(&(info->args->fork[info->id]), info);
-	}
+	info->args->fork_available[info->id % info->args->phil_num] = 1;
+	info->fork_num = info->id % info->args->phil_num;
+	take_fork(&(info->args->fork[info->id % info->args->phil_num]), info);
 }
 
 void	put_back_both_forks(t_info *info)
 {
-	// if (info->id == info->args->phil_num)
-	// {
-	// 	pthread_mutex_unlock(&(info->args->fork[0]));
-	// 	info->args->fork_available[0] = 0;
-	// 	pthread_mutex_unlock(&(info->args->fork[info->id - 1]));
-	// 	info->args->fork_available[info->id - 1] = 0;
-	// }
-	// else
-	// {
-	// 	pthread_mutex_unlock(&(info->args->fork[info->id]));
-		// info->args->fork_available[info->id] = 0;
-	// 	pthread_mutex_unlock(&(info->args->fork[info->id - 1]));
-	// 	info->args->fork_available[info->id - 1] = 0;
-	// }
-		pthread_mutex_unlock(&(info->args->fork[info->id % info->args->phil_num]));
-		info->args->fork_available[info->id % info->args->phil_num] = 0;
+	if (info->id == info->args->phil_num)
+	{
+		pthread_mutex_unlock(&(info->args->fork[0]));
+		info->args->fork_available[0] = 0;
 		pthread_mutex_unlock(&(info->args->fork[info->id - 1]));
 		info->args->fork_available[info->id - 1] = 0;
+	}
+	else
+	{
+		pthread_mutex_unlock(&(info->args->fork[info->id]));
+		info->args->fork_available[info->id] = 0;
+		pthread_mutex_unlock(&(info->args->fork[info->id - 1]));
+		info->args->fork_available[info->id - 1] = 0;
+	}
 }
-
-// void	sleep_func(int time_ms)
-// {
-// 	struct timeval	start;
-// 	struct timeval	now;
-// 	struct timeval	target;
-	
-// 	gettimeofday(&start, NULL);
-// 	target.tv_usec = start.tv_usec + (time_ms % 1000) * 1000;
-// 	target.tv_sec = start.tv_sec + time_ms / 1000 + target.tv_usec / 1000000;
-// 	target.tv_usec %= 1000000;
-// 	gettimeofday(&now, NULL);
-// 	while (now.tv_sec < target.tv_sec || now.tv_usec < target.tv_usec)
-// 	{
-// 		gettimeofday(&now, NULL);
-// 		usleep(100);
-// 	}
-// 	return ;
-// }
 
 void	*routine(void *arg)
 {
 	t_info	*info;
-	// int		eat_ms;
 	int		flag;
 
 	info = (t_info *)arg;
-	// eat_ms = info->args->eat_ms;
 	if (info->id % 2 != 0)
 		usleep(100);
 	while (info->args->died != 1)
@@ -298,30 +264,14 @@ void	*routine(void *arg)
 		while (flag == 0)
 		{
 			if (info->args->fork_available[info->id - 1] == 0)
-			{
 				take_right_fork(info);
-				take_left_fork(info, &flag);
-			}
-			if (info->args->died != 1)
-				return (NULL);
+			take_left_fork(info, &flag);
 		}
-		// if (info->id % 2 != 0)
-		// {
-		// 	take_right_fork(info);
-		// 	take_left_fork(info);
-		// }
-		// else
-		// {
-		// 	take_left_fork(info);
-		// 	take_right_fork(info);
-		// }
 		print_msg(info, EAT);
-		// sleep_func(eat_ms);
 		usleep(info->args->eat_ms * 1000);
 		put_back_both_forks(info);
 		print_msg(info, SLEEP);
-		// sleep_func(info->args->sleep_ms);
-		usleep(info->args->sleep_ms * 1000);
+		usleep(info->args->sleep_ms);
 		print_msg(info, THINK);
 	}
 	return (NULL);
@@ -400,13 +350,13 @@ int	main(int ac, char **av)
 		usleep(100);
 		i = 0;
 		gettimeofday(&now, NULL);
-		while (args.died != 1 && i < args.phil_num)
+		while (i < args.phil_num)
 		{
-			time_spent = (now.tv_sec - info[i].last_meal.tv_sec) * 1000 + (now.tv_usec - info[i].last_meal.tv_usec) / 1000;
+			time_spent = (now.tv_sec - args.last_meal.tv_sec) * 1000 + (now.tv_usec - args.last_meal.tv_usec) / 1000;
 			if (time_spent >= args.die_ms)
 			{
-				args.died = 1;
 				print_msg(&info[i], DIED);
+				args.died = 1;
 			}
 			++i;
 		}
