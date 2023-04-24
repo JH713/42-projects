@@ -6,7 +6,7 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/13 16:33:39 by jihyeole          #+#    #+#              #
-#    Updated: 2023/04/24 20:40:23 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/04/24 20:49:05 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,6 +20,7 @@ OBJ_NAME = $(SRC_NAME:.c=.o)
 OBJS = $(addprefix $(OBJ_DIR),$(OBJ_NAME))
 CC = cc
 CFLAGS = -Wall -Wextra -Werror 
+
 
 all : $(NAME)
 

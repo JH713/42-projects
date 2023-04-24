@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:06:41 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 20:08:46 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/24 21:16:34 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static void	*routine(void *arg)
 	return (NULL);
 }
 
-void	create_threads(pthread_t **philo, t_info *info)
+int	create_threads(pthread_t **philo, t_info *info)
 {
 	int		i;
 	int		error;
@@ -62,15 +62,23 @@ void	create_threads(pthread_t **philo, t_info *info)
 	phil_num = info->args->phil_num;
 	*philo = (pthread_t *)malloc(sizeof(pthread_t) * phil_num);
 	if (*philo == NULL)
-		print_perror("malloc");
+	{
+		free(info->args->fork);
+		return (0);
+	}
 	i = 0;
 	while (i < phil_num)
 	{
 		error = pthread_create(&(*philo)[i], NULL, routine, (void *)&(info[i]));
 		if (error != 0)
-			print_perror("pthread_create");
+		{
+			free(info->args->fork);
+			free(philo);
+			return (0);
+		}
 		++i;
 	}
+	return (1);
 }
 
 void	join_threads(pthread_t *philo, t_args *args)

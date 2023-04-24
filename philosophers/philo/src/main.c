@@ -6,11 +6,18 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 22:01:03 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 20:21:58 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/24 22:49:47 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	free_func(pthread_mutex_t *fork, t_info *info, pthread_t *philo)
+{
+	free(fork);
+	free(info);
+	free(philo);
+}
 
 int	main(int ac, char **av)
 {
@@ -20,13 +27,22 @@ int	main(int ac, char **av)
 	pthread_mutex_t	msg;
 	t_info			*info;
 
-	args = check_and_store_args(ac, av);
-	create_mutexs(&fork, args.phil_num, &msg);
+	if (check_and_store_args(&args, ac, av) == 0)
+		return (1);
+	if (create_mutexes(&fork, args.phil_num, &msg) == 0)
+		return (print_error("create_mutexes error"));
 	info = get_info(&args, fork, &msg);
-	create_threads(&philo, info);
+	if (info == NULL)
+		return (print_error("info malloc error"));
+	if (create_threads(&philo, info) == 0)
+		return (print_error("info malloc error"));
 	monitoring(info);
 	join_threads(philo, &args);
-	destroy_mutexs(&fork, args.phil_num, &msg);
-	free(philo);
-	free(fork);
+	if (destroy_mutexes(&fork, args.phil_num, &msg) == 0)
+	{
+		free_func(fork, info, philo);
+		return (print_error("destroy_mutexes error"));
+	}
+	free_func(fork, info, philo);
+	return (0);
 }

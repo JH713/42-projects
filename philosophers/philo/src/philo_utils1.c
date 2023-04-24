@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 19:42:33 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 19:48:03 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/24 22:51:26 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,6 @@ static int	is_positive_int(char *num)
 int	check_and_get_int(char *str)
 {
 	if (!is_positive_int(str))
-		print_error("The arguments must be positive integers.");
+		return (-1);
 	return (ft_atoi(str));
 }
