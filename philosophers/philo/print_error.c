@@ -1,32 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   print_error.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/17 22:01:03 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 20:21:58 by jihyeole         ###   ########.fr       */
+/*   Created: 2023/04/24 19:43:36 by jihyeole          #+#    #+#             */
+/*   Updated: 2023/04/24 19:47:23 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int ac, char **av)
+static void	ft_putendl_fd(char *s, int fd)
 {
-	t_args			args;
-	pthread_t		*philo;
-	pthread_mutex_t	*fork;
-	pthread_mutex_t	msg;
-	t_info			*info;
+	while (*s)
+	{
+		write(fd, s, 1);
+		s++;
+	}
+	write(fd, "\n", 1);
+}
 
-	args = check_and_store_args(ac, av);
-	create_mutexs(&fork, args.phil_num, &msg);
-	info = get_info(&args, fork, &msg);
-	create_threads(&philo, info);
-	monitoring(info);
-	join_threads(philo, &args);
-	destroy_mutexs(&fork, args.phil_num, &msg);
-	free(philo);
-	free(fork);
+void	print_perror(char *msg)
+{
+	perror(msg);
+	exit(1);
+}
+
+void	print_error(char *msg)
+{
+	ft_putendl_fd(msg, 2);
+	exit(1);
 }

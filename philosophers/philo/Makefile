@@ -6,12 +6,13 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/13 16:33:39 by jihyeole          #+#    #+#              #
-#    Updated: 2023/04/13 16:41:45 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/04/24 20:17:13 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
-SRCS = main.c 
+SRCS = main.c philo_utils1.c philo_utils2.c print_error.c fork.c \
+	   mutex.c thread.c print_msg.c init_args_info.c monitoring.c
 OBJS = $(SRCS:.c=.o)
 CC = cc
 CFLAGS = -Wall -Wextra -Werror 
