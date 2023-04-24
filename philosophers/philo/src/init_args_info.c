@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:15:21 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 23:42:20 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/24 23:53:28 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,31 +23,22 @@ int	check_and_store_args(t_args *args, int ac, char *av[])
 	args->die_ms = check_and_get_int(av[2]);
 	args->eat_ms = check_and_get_int(av[3]);
 	args->sleep_ms = check_and_get_int(av[4]);
+	if (ac == 6)
+		args->meal_cnt = check_and_get_int(av[5]);
+	else
+		args->meal_cnt = -2;
 	if (args->phil_num == -1 || args->die_ms == -1 || \
-	args->eat_ms == -1 || args->sleep_ms == -1)
+	args->eat_ms == -1 || args->sleep_ms == -1 || args->meal_cnt == -1)
 	{
 		print_error("The arguments must be positive integers.");
 		return (0);
 	}
-	if (ac == 6)
-	{
-		args->meal_cnt = check_and_get_int(av[5]);
-		if (args->meal_cnt == -1)
-		{
-			print_error("The arguments must be positive integers.");
-			return (0);
-		}
-	}
-	else
-		args->meal_cnt = -1;
 	return (1);
 }
 
-t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
+static void	init_args(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 {
 	struct timeval	start;
-	t_info			*info;
-	int				i;
 
 	gettimeofday(&start, NULL);
 	args->fork = fork;
@@ -55,6 +46,14 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 	args->start = start;
 	args->died = 0;
 	args->finished = 0;
+}
+
+t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
+{
+	t_info			*info;
+	int				i;
+
+	init_args(args, fork, msg);
 	info = (t_info *)malloc(sizeof(t_info) * args->phil_num);
 	if (info == NULL)
 	{
@@ -64,7 +63,7 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 	i = 0;
 	while (i < args->phil_num)
 	{
-		info[i].last_meal = start;
+		info[i].last_meal = args->start;
 		info[i].meal_cnt = args->meal_cnt;
 		info[i].id = i + 1;
 		info[i].args = args;

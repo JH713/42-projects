@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 21:57:27 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 21:29:44 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/24 23:53:10 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ int		create_threads(pthread_t **philo, t_info *info);
 void	join_threads(pthread_t *philo, t_args *args);
 void	print_msg(t_info *info, enum e_state state);
 t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg);
-int	check_and_store_args(t_args *args, int ac, char *av[]);
+int		check_and_store_args(t_args *args, int ac, char *av[]);
 void	monitoring(t_info *info);
 
 #endif
