@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 19:45:30 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/27 16:45:43 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/28 23:52:55 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,50 @@ int	ft_atoi(const char *str)
 		str++;
 	}
 	return (result * is_positive);
+}
+
+void	wait_all_child(pid_t *pid, int phil_num)
+{
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < phil_num)
+	{
+		waitpid(pid[i], &status, 0);
+		++i;
+	}
+}
+
+int	get_passed_time_ms(t_info *info, enum e_state state)
+{
+	struct timeval	start;
+	struct timeval	now;
+	long long		passed_time;
+
+	start = info->start;
+	gettimeofday(&now, NULL);
+	if (state == EAT)
+		info->last_meal = now;
+	passed_time = (now.tv_sec - start.tv_sec) * 1000 \
+	+ (now.tv_usec - start.tv_usec) / 1000;
+	return ((int) passed_time);
+}
+
+void	kill_processes(t_info *info)
+{
+	int	i;
+
+	i = 0;
+	while (i < info->args->phil_num)
+	{
+		sem_wait(info->sem_die);
+		++i;
+	}
+	i = 0;
+	while (i < info->args->phil_num)
+	{
+		kill(info->pid[i], SIGKILL);
+		++i;
+	}
 }

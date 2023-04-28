@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:52:31 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/28 23:26:43 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/29 00:00:25 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,11 @@ void	print_error(char *msg);
 void	open_sems(t_info *info);
 void	close_and_unlink_sems(t_info *info);
 void	philosopher_process(t_info *info);
+void	wait_all_child(pid_t *pid, int phil_num);
 int		get_passed_time_ms(t_info *info, enum e_state state);
+void	kill_processes(t_info *info);
+void	philo_process(t_info *info);
+t_args	check_and_store_args(int ac, char *av[]);
+void	init_info(t_info *info, t_args *args);
 
 #endif
