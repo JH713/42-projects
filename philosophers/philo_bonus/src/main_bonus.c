@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:52:34 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/27 17:43:25 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/28 21:40:01 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	print_msg(t_info *info, int id, t_state state)
 		if (info->args->meal_cnt > 0)
 			info->args->meal_cnt--;
 		if (info->args->meal_cnt == 0)
-			exit(0);
+			sem_post(info->sem_die);
 	}
 	else if (state == SLEEP)
 		printf("%d %d is sleeping\n", passed_time, id);
@@ -81,6 +81,7 @@ void	print_msg(t_info *info, int id, t_state state)
 		printf("%d %d died\n", passed_time, id);
 	sem_post(info->sem_msg);
 }
+
 static void	sleep_func(int time_ms)
 {
 	struct timeval	start;
@@ -120,15 +121,8 @@ void	*monitor_func(void *arg)
 			i = 0;
 			while (i < info->args->phil_num)
 			{
-				printf("1\n");
-				if (i + 1 != info->id)
-				{
-					printf("%d\n", i);
-					if (kill(info->pid[i], SIGKILL) != 0)
-						printf("%d\n", i);
-				}
+				sem_post(info->sem_die);
 				++i;
-				exit(0);
 			}
 			break ;
 		}
@@ -192,7 +186,12 @@ int	main(int ac, char **av)
 		}
 		++i;
 	}
-	sem_wait(info.sem_die);
+	i = 0;
+	while (i < args.phil_num)
+	{
+		sem_wait(info.sem_die);
+		++i;
+	}
 	i = 0;
 	while (i < args.phil_num)
 	{
