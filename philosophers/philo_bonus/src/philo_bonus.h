@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:52:31 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/27 16:47:05 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/28 23:26:43 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,9 @@ int		ft_atoi(const char *str);
 int		check_and_get_int(char *str);
 void	print_perror(char *msg);
 void	print_error(char *msg);
+void	open_sems(t_info *info);
+void	close_and_unlink_sems(t_info *info);
+void	philosopher_process(t_info *info);
+int		get_passed_time_ms(t_info *info, enum e_state state);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:52:34 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/28 21:40:01 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/28 23:41:29 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,10 @@ void	print_msg(t_info *info, int id, t_state state)
 	else if (state == THINK)
 		printf("%d %d is thinking\n", passed_time, id);
 	else if (state == DIED)
+	{
 		printf("%d %d died\n", passed_time, id);
+		return ;
+	}
 	sem_post(info->sem_msg);
 }
 
@@ -130,6 +133,24 @@ void	*monitor_func(void *arg)
 	return (NULL);
 }
 
+void	kill_processes(t_info *info)
+{
+	int	i;
+
+	i = 0;
+	while (i < info->args->phil_num)
+	{
+		sem_wait(info->sem_die);
+		++i;
+	}
+	i = 0;
+	while (i < info->args->phil_num)
+	{
+		kill(info->pid[i], SIGKILL);
+		++i;
+	}
+}
+
 int	main(int ac, char **av)
 {
 	t_args			args;
@@ -139,18 +160,7 @@ int	main(int ac, char **av)
 
 	args = check_and_store_args(ac, av);
 	info.args = &args;
-	sem_unlink("/fork");
-	sem_unlink("/msg");
-	sem_unlink("/die");
-	info.sem_fork = sem_open("/fork", O_CREAT | O_EXCL, 0600, args.phil_num);
-	if (info.sem_fork == SEM_FAILED)
-		print_perror("sem_open");
-	info.sem_msg = sem_open("/msg", O_CREAT | O_EXCL, 0600, 1);
-	if (info.sem_msg == SEM_FAILED)
-		print_perror("sem_open");
-	info.sem_die = sem_open("/die", O_CREAT | O_EXCL, 0600, 0);
-	if (info.sem_die == SEM_FAILED)
-		print_perror("sem_open");
+	open_sems(&info);
 	info.pid = (pid_t *)malloc(sizeof(pid_t) * args.phil_num);
 	if (info.pid == NULL)
 		print_perror("pid malloc");
@@ -180,36 +190,14 @@ int	main(int ac, char **av)
 				print_msg(&info, i + 1, SLEEP);
 				sleep_func(args.sleep_ms);
 				print_msg(&info, i + 1, THINK);
-				sleep_func(1);
+				sleep_func(2);
 			}
 			pthread_join(monitoring, NULL);
 		}
 		++i;
 	}
-	i = 0;
-	while (i < args.phil_num)
-	{
-		sem_wait(info.sem_die);
-		++i;
-	}
-	i = 0;
-	while (i < args.phil_num)
-	{
-		kill(info.pid[i], SIGKILL);
-		++i;
-	}
+	kill_processes(&info);
 	wait_all_child(info.pid, args.phil_num);
-	if (sem_close(info.sem_fork) == -1)
-		print_perror("sem_close");
-	if (sem_close(info.sem_msg) == -1)
-		print_perror("sem_close");
-	if (sem_close(info.sem_die) == -1)
-		print_perror("sem_close");
-	if (sem_unlink("/fork") == -1)
-		print_perror("sem_unlink");
-	if (sem_unlink("/msg") == -1)
-		print_perror("sem_unlink");
-	if (sem_unlink("/die") == -1)
-		print_perror("sem_unlink");
+	close_and_unlink_sems(&info);
 	free(info.pid);
 }
