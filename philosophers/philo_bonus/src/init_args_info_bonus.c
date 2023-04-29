@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 23:59:37 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/29 00:00:38 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/29 19:31:12 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,4 @@ void	init_info(t_info *info, t_args *args)
 	info->pid = (pid_t *)malloc(sizeof(pid_t) * args->phil_num);
 	if (info->pid == NULL)
 		print_perror("pid malloc");
-	gettimeofday(&(info->start), NULL);
-	info->last_meal = info->start;
 }

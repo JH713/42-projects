@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:15:21 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 23:53:28 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/29 19:19:45 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,8 @@ int	check_and_store_args(t_args *args, int ac, char *av[])
 
 static void	init_args(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 {
-	struct timeval	start;
-
-	gettimeofday(&start, NULL);
 	args->fork = fork;
 	args->msg = msg;
-	args->start = start;
 	args->died = 0;
 	args->finished = 0;
 }
@@ -52,6 +48,7 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 {
 	t_info			*info;
 	int				i;
+	struct timeval	start;
 
 	init_args(args, fork, msg);
 	info = (t_info *)malloc(sizeof(t_info) * args->phil_num);
@@ -61,9 +58,11 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 		return (NULL);
 	}
 	i = 0;
+	gettimeofday(&start, NULL);
+	args->start = start;
 	while (i < args->phil_num)
 	{
-		info[i].last_meal = args->start;
+		info[i].last_meal = start;
 		info[i].meal_cnt = args->meal_cnt;
 		info[i].id = i + 1;
 		info[i].args = args;

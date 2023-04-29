@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:52:34 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/29 00:00:00 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/29 19:31:32 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ int	main(int ac, char **av)
 	args = check_and_store_args(ac, av);
 	init_info(&info, &args);
 	open_sems(&info);
+	gettimeofday(&(info.start), NULL);
+	info.last_meal = info.start;
 	philo_process(&info);
 	kill_processes(&info);
 	wait_all_child(info.pid, args.phil_num);
