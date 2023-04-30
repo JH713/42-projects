@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 19:45:30 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 20:22:08 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 05:11:07 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,11 @@ int	ft_atoi(const char *str)
 		str++;
 	}
 	return (result * is_positive);
+}
+
+void	free_func(pthread_mutex_t *fork, t_info *info, pthread_t *philo)
+{
+	free(fork);
+	free(info);
+	free(philo);
 }

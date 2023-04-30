@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/28 23:53:49 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/29 16:12:45 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 04:45:04 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,19 +44,17 @@ static void	sleep_func(int time_ms)
 {
 	struct timeval	start;
 	struct timeval	now;
-	struct timeval	target;
+	long long		target;
 
 	gettimeofday(&start, NULL);
-	target.tv_usec = start.tv_usec + (time_ms % 1000) * 1000;
-	target.tv_sec = start.tv_sec + time_ms / 1000 + target.tv_usec / 1000000;
-	target.tv_usec %= 1000000;
+	target = start.tv_sec * 1000 + start.tv_usec / 1000 + time_ms;
+	usleep(time_ms * 700);
 	gettimeofday(&now, NULL);
-	while (now.tv_sec < target.tv_sec || now.tv_usec < target.tv_usec)
+	while (now.tv_sec * 1000 + now.tv_usec / 1000 <= target)
 	{
-		gettimeofday(&now, NULL);
 		usleep(100);
+		gettimeofday(&now, NULL);
 	}
-	return ;
 }
 
 static void	*monitor_func(void *arg)

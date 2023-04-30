@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 21:57:27 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 23:53:10 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 05:10:40 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,8 @@ typedef struct s_info{
 	int				id;
 	int				meal_cnt;
 	struct timeval	last_meal;
+	pthread_mutex_t	*left_fork;
+	pthread_mutex_t	*right_fork;
 	t_args			*args;
 }	t_info;
 
@@ -60,5 +62,6 @@ void	print_msg(t_info *info, enum e_state state);
 t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg);
 int		check_and_store_args(t_args *args, int ac, char *av[]);
 void	monitoring(t_info *info);
+void	free_func(pthread_mutex_t *fork, t_info *info, pthread_t *philo);
 
 #endif

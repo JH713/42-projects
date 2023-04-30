@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:12:44 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/30 22:53:35 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 05:10:01 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,31 +27,33 @@ static int	get_passed_time_ms(t_info *info, enum e_state state)
 	return ((int) passed_time);
 }
 
+void	meal_count(t_info *info)
+{
+	if (info->meal_cnt > 0)
+		info->meal_cnt--;
+	if (info->meal_cnt == 0)
+		info->args->finished++;
+}
+
 void	print_msg(t_info *info, enum e_state state)
 {
 	int	passed_time;
 
+	if (info->args->died == 1 && state != DIED)
+		return ;
 	pthread_mutex_lock(info->args->msg);
 	passed_time = get_passed_time_ms(info, state);
 	if (info->args->died == 1)
 	{
 		if (state == DIED)
 			printf("%d %d died\n", passed_time, info->id);
-		else
-		{
-			pthread_mutex_unlock(info->args->msg);
-			return ;
-		}
 	}
 	else if (state == FORK)
 		printf("%d %d has taken a fork\n", passed_time, info->id);
 	else if (state == EAT)
 	{
 		printf("%d %d is eating\n", passed_time, info->id);
-		if (info->meal_cnt > 0)
-			info->meal_cnt--;
-		if (info->meal_cnt == 0)
-			info->args->finished++;
+		meal_count(info);
 	}
 	else if (state == SLEEP)
 		printf("%d %d is sleeping\n", passed_time, info->id);

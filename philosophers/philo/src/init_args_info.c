@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:15:21 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/29 19:19:45 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 03:52:16 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ t_info	*get_info(t_args *args, pthread_mutex_t *fork, pthread_mutex_t *msg)
 		info[i].meal_cnt = args->meal_cnt;
 		info[i].id = i + 1;
 		info[i].args = args;
+		info[i].left_fork = &(args->fork)[info[i].id - 1];
+		info[i].right_fork = &(args->fork)[info[i].id % args->phil_num];
 		++i;
 	}
 	return (info);

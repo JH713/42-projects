@@ -6,39 +6,27 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:06:41 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/30 22:43:17 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 05:07:02 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	sleep_func(t_info *info, int time_ms)
+static void	sleep_func(int time_ms)
 {
 	struct timeval	start;
 	struct timeval	now;
-	struct timeval	target;
-	// int				_kill;
+	long long		target;
 
-	// pthread_mutex_lock(info->args->msg);
-	// _kill = info->args->died;
-	// pthread_mutex_unlock(info->args->msg);
-	// if (_kill)
-	// 	return ;
-	if (info->args->died == 1)
-		return ;
 	gettimeofday(&start, NULL);
-	target.tv_usec = start.tv_usec + (time_ms % 1000) * 1000;
-	target.tv_sec = start.tv_sec + time_ms / 1000 + target.tv_usec / 1000000;
-	target.tv_usec %= 1000000;
+	target = start.tv_sec * 1000 + start.tv_usec / 1000 + time_ms;
 	usleep(time_ms * 700);
-	// usleep(500);
 	gettimeofday(&now, NULL);
-	while (now.tv_sec < target.tv_sec || now.tv_usec < target.tv_usec)
+	while (now.tv_sec * 1000 + now.tv_usec / 1000 <= target)
 	{
-		usleep(1000);
+		usleep(100);
 		gettimeofday(&now, NULL);
 	}
-	return ;
 }
 
 static void	*routine(void *arg)
@@ -47,17 +35,25 @@ static void	*routine(void *arg)
 
 	info = (t_info *)arg;
 	if (info->id % 2 != 0)
-		usleep(1000);
+		usleep(2000);
 	while (info->args->died != 1)
 	{
 		if (take_both_fork(info) == 0)
 			break ;
 		print_msg(info, EAT);
-		sleep_func(info, info->args->eat_ms);
+		if (info->args->died == 1)
+		{
+			put_back_both_forks(info);
+			break ;
+		}
+		sleep_func(info->args->eat_ms);
 		put_back_both_forks(info);
 		print_msg(info, SLEEP);
-		sleep_func(info, info->args->sleep_ms);
+		if (info->args->died == 1)
+			break ;
+		sleep_func(info->args->sleep_ms);
 		print_msg(info, THINK);
+		sleep_func3(1);
 	}
 	return (NULL);
 }

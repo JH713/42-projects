@@ -6,18 +6,11 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/17 22:01:03 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/24 22:49:47 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 05:10:27 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
-void	free_func(pthread_mutex_t *fork, t_info *info, pthread_t *philo)
-{
-	free(fork);
-	free(info);
-	free(philo);
-}
 
 int	main(int ac, char **av)
 {
