@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:16:09 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/04/29 20:00:00 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/04/30 22:26:34 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	monitoring(t_info *info)
 	args = info->args;
 	while (args->died != 1)
 	{
-		usleep(100);
+		usleep(1000);
 		if (args->finished == args->phil_num)
 			args->died = 1;
 		i = 0;
