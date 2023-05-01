@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:06:41 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/01 05:07:02 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 16:11:06 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static void	*routine(void *arg)
 			break ;
 		sleep_func(info->args->sleep_ms);
 		print_msg(info, THINK);
-		sleep_func3(1);
+		sleep_func(1);
 	}
 	return (NULL);
 }
