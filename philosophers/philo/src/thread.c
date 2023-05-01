@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:06:41 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/01 16:11:06 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 19:39:17 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,16 @@ static void	sleep_func(int time_ms)
 	}
 }
 
+int	get_died(t_args *args)
+{
+	int	died;
+
+	pthread_mutex_lock(&(args->flag));
+	died = args->died;
+	pthread_mutex_unlock(&(args->flag));
+	return (died);
+}
+
 static void	*routine(void *arg)
 {
 	t_info	*info;
@@ -36,12 +46,12 @@ static void	*routine(void *arg)
 	info = (t_info *)arg;
 	if (info->id % 2 != 0)
 		usleep(2000);
-	while (info->args->died != 1)
+	while (get_died(info->args) != 1)
 	{
 		if (take_both_fork(info) == 0)
 			break ;
 		print_msg(info, EAT);
-		if (info->args->died == 1)
+		if (get_died(info->args) == 1)
 		{
 			put_back_both_forks(info);
 			break ;
@@ -49,11 +59,10 @@ static void	*routine(void *arg)
 		sleep_func(info->args->eat_ms);
 		put_back_both_forks(info);
 		print_msg(info, SLEEP);
-		if (info->args->died == 1)
+		if (get_died(info->args) == 1)
 			break ;
 		sleep_func(info->args->sleep_ms);
 		print_msg(info, THINK);
-		sleep_func(1);
 	}
 	return (NULL);
 }

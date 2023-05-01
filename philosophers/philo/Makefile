@@ -6,7 +6,7 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/04/13 16:33:39 by jihyeole          #+#    #+#              #
-#    Updated: 2023/04/30 21:39:00 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/01 18:23:50 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,8 +25,7 @@ CFLAGS = -Wall -Wextra -Werror
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	$(CC) $(OBJS) -o $(NAME) 
-#-fsanitize=thread -g
+	$(CC) $(OBJS) -o $(NAME)
 
 $(OBJ_DIR)%.o : $(SRC_DIR)%.c 
 	$(CC) $(CFLAGS) -c $< -o $@
