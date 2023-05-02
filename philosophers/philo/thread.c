@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:06:41 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/01 19:39:17 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/01 21:11:16 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ static void	*routine(void *arg)
 	t_info	*info;
 
 	info = (t_info *)arg;
-	if (info->id % 2 != 0)
-		usleep(2000);
+	if (info->id % 2 == 0)
+		usleep(info->args->eat_ms / 10);
 	while (get_died(info->args) != 1)
 	{
 		if (take_both_fork(info) == 0)
@@ -63,6 +63,7 @@ static void	*routine(void *arg)
 			break ;
 		sleep_func(info->args->sleep_ms);
 		print_msg(info, THINK);
+		sleep_func(2);
 	}
 	return (NULL);
 }
