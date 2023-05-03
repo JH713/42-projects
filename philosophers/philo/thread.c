@@ -6,13 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:06:41 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/01 21:11:16 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/03 18:19:48 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static void	sleep_func(int time_ms)
+static void	sleep_func(t_info *info, int time_ms)
 {
 	struct timeval	start;
 	struct timeval	now;
@@ -20,11 +20,17 @@ static void	sleep_func(int time_ms)
 
 	gettimeofday(&start, NULL);
 	target = start.tv_sec * 1000 + start.tv_usec / 1000 + time_ms;
-	usleep(time_ms * 700);
 	gettimeofday(&now, NULL);
 	while (now.tv_sec * 1000 + now.tv_usec / 1000 <= target)
 	{
-		usleep(100);
+		pthread_mutex_lock(&(info->args->flag));
+		if (info->args->died == 1)
+		{
+			pthread_mutex_unlock(&(info->args->flag));
+			return ;
+		}
+		pthread_mutex_unlock(&(info->args->flag));
+		usleep(1000);
 		gettimeofday(&now, NULL);
 	}
 }
@@ -56,14 +62,14 @@ static void	*routine(void *arg)
 			put_back_both_forks(info);
 			break ;
 		}
-		sleep_func(info->args->eat_ms);
+		sleep_func(info, info->args->eat_ms);
 		put_back_both_forks(info);
 		print_msg(info, SLEEP);
 		if (get_died(info->args) == 1)
 			break ;
-		sleep_func(info->args->sleep_ms);
+		sleep_func(info, info->args->sleep_ms);
 		print_msg(info, THINK);
-		sleep_func(2);
+		sleep_func(info, 2);
 	}
 	return (NULL);
 }

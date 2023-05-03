@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 20:12:44 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/01 19:38:34 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/03 23:32:57 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,18 +44,16 @@ void	meal_count(t_info *info)
 void	print_msg(t_info *info, enum e_state state)
 {
 	int	passed_time;
-	int	died;
 
-	died = get_died(info->args);
-	if (died == 1 && state != DIED)
-		return ;
 	pthread_mutex_lock(&(info->args->msg));
-	passed_time = get_passed_time_ms(info, state);
-	if (died == 1)
+	if (get_died(info->args) == 1 && state != DIED)
 	{
-		if (state == DIED)
-			printf("%d %d died\n", passed_time, info->id);
+		pthread_mutex_unlock(&(info->args->msg));
+		return ;
 	}
+	passed_time = get_passed_time_ms(info, state);
+	if (state == DIED)
+		printf("%d %d died\n", passed_time, info->id);
 	else if (state == FORK)
 		printf("%d %d has taken a fork\n", passed_time, info->id);
 	else if (state == EAT)
