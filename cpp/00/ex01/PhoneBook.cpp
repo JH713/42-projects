@@ -81,27 +81,23 @@ void PhoneBook::DisplayPhoneBook() const
 		contacts[i].DisplayContact(i);
 	std::cout << "Please enter the index of the entry to display: ";
 	std::string idxStr;
-	int index;
-	while (1)
-	{  
-		std::getline(std::cin, idxStr);
-		if (std::cin.eof())
-		{
-			std::cout << "\nEOF가 입력되었습니다." << std::endl;
-			exit(1);
-		}
-		if (idxStr == "" || idxStr.length() > 1)
-		{
-			std::cout << "Invalid index. Please enter a valid index: ";
-			continue;
-		}
-		index = std::atoi(idxStr.c_str());
-		if (index < 0 || index >= contactNum)
-		{
-			std::cout << "Index out of range. Please enter a valid index: ";
-			continue;
-		}
-		contacts[index].DisplayContact(index);
-		break;
+	int index; 
+	std::getline(std::cin, idxStr);
+	if (std::cin.eof())
+	{
+		std::cout << "\nEOF가 입력되었습니다." << std::endl;
+		exit(1);
 	}
+	if (idxStr == "" || idxStr.length() > 1)
+	{
+		std::cout << "Invalid index." << std::endl;
+		return ;
+	}
+	index = std::atoi(idxStr.c_str());
+	if (index < 0 || index >= contactNum)
+	{
+		std::cout << "Invalid index." << std::endl;
+		return ;
+	}
+	contacts[index].DisplayContact(index);
 }
