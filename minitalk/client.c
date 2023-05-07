@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/05 07:35:08 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/07 20:15:54 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/07 21:37:25 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,11 @@ int	my_exp(int base, int n)
 	return (result);
 }
 
-#include <stdio.h>
+void	print_error(char *msg)
+{
+	perror(msg);
+	exit(1);
+}
 
 int	main(int argc, char *argv[])
 {
@@ -37,7 +41,6 @@ int	main(int argc, char *argv[])
 	char	*str;
 	int		i;
 	int		zero_cnt;
-	int		bit;
 	int		j;
 
 	if (argc != 3)
@@ -57,18 +60,19 @@ int	main(int argc, char *argv[])
 		{
 			if (str[j] >= my_exp(2, i))
 			{
-				bit = 1;
+				if (kill(pid, SIGUSR2) == -1)
+					print_error("kill");
 				str[j] -= my_exp(2, i);
 			}
 			else
 			{
-				bit = 0;
+				if (kill(pid, SIGUSR1) == -1)
+					print_error("kill");
 				++zero_cnt;
 			}
-			printf("%d", bit);
 			--i;
+			usleep(100);
 		}
-		printf("\n");
 		++j;
 	}
 }
