@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:01:25 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/08 15:43:51 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/09 14:54:34 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,5 +17,6 @@
 # include <readline/history.h>
 # include <stdlib.h>
 # include <stdio.h>
+# include <unistd.h>
 
 #endif
