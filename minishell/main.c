@@ -6,31 +6,11 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:00:08 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/10 02:01:39 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/11 00:04:12 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	print_err_msg(char *command, char *err_msg)
-{
-	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(command, 2);
-	ft_putstr_fd(": ", 2);
-	ft_putendl_fd(err_msg, 2);
-}
-
-void	print_perror(char *msg)
-{
-	ft_putstr_fd("minishell: ", 2);
-	perror(msg);
-}
-
-void	print_error(char *msg)
-{
-	ft_putendl_fd(msg, 2);
-	exit(1);
-}
 
 char	**get_path(char **env)
 {
@@ -65,26 +45,34 @@ char	*execute_check(char *command, char **path)
 	{
 		if (access(command, X_OK) != 0)
 		{
-			print_perror(command);
+			minishell_perror(command);
 			return (NULL);
 		}
-		full_path = ft_strdup(command);
+		return (ft_strdup(command));
 	}
-	else
+	i = 0;
+	while (path[i])
 	{
-		i = 0;
-		while (path[i])
-		{
-			full_path = ft_strjoin(path[i], command);
-			if (access(full_path, X_OK) == 0)
-				return (full_path);
-			free(full_path);
-			++i;
-		}
-		print_err_msg(command, "command not found");
-		return (NULL);
+		full_path = ft_strjoin(path[i], command);
+		if (access(full_path, X_OK) == 0)
+			return (full_path);
+		free(full_path);
+		++i;
 	}
-	return (full_path);
+	minishell_err_msg(command, "command not found");
+	return (NULL);
+}
+
+void	print_env(char **env)
+{
+	int	i;
+
+	i = 0;
+	while (env[i])
+	{
+		ft_putendl_fd(env[i], 1);
+		++i;
+	}
 }
 
 int	main(int argc, char **argv, char **env)
@@ -95,7 +83,7 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argv;
 	if (argc != 1)
-		print_error("Error: Invalid number of arguments.\nUsage: ./minishell");
+		print_error_with_exit("Error: Invalid number of arguments.");
 	path = get_path(env);
 	while (1)
 	{
@@ -105,6 +93,12 @@ int	main(int argc, char **argv, char **env)
 		if (ft_strncmp(command, "exit", 5) == 0)
 		{
 			ft_printf("exit\n");
+			free(command);
+			break ;
+		}
+		else if (ft_strncmp(command, "env", 4) == 0)
+		{
+			print_env(env);
 			free(command);
 			break ;
 		}

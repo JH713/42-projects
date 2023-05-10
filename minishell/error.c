@@ -1,26 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/07 22:01:25 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/10 23:31:43 by jihyeole         ###   ########.fr       */
+/*   Created: 2023/05/10 23:30:46 by jihyeole          #+#    #+#             */
+/*   Updated: 2023/05/10 23:32:07 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
-# include "./libft/libft.h"
-# include <readline/readline.h>
-# include <readline/history.h>
-# include <stdlib.h>
-# include <stdio.h>
-# include <unistd.h>
+#include "minishell.h"
 
-void	minishell_err_msg(char *command, char *err_msg);
-void	minishell_perror(char *msg);
-void	print_error_with_exit(char *msg);
+void	minishell_err_msg(char *command, char *err_msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(command, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putendl_fd(err_msg, 2);
+}
 
-#endif
+void	minishell_perror(char *msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	perror(msg);
+}
+
+void	print_error_with_exit(char *msg)
+{
+	ft_putendl_fd(msg, 2);
+	exit(1);
+}

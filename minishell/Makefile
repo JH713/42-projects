@@ -6,12 +6,12 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/07 21:56:35 by jihyeole          #+#    #+#              #
-#    Updated: 2023/05/08 15:17:07 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/10 23:31:22 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
-SRCS = main.c 
+SRCS = main.c error.c
 OBJS = $(SRCS:.c=.o)
 CC = CC
 CFLAGS = -Wall -Wextra -Werror 
