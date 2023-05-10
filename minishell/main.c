@@ -6,16 +6,24 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:00:08 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/09 16:27:39 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/10 02:01:39 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void	print_err_msg(char *command, char *err_msg)
+{
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(command, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putendl_fd(err_msg, 2);
+}
+
 void	print_perror(char *msg)
 {
+	ft_putstr_fd("minishell: ", 2);
 	perror(msg);
-	exit(1);
 }
 
 void	print_error(char *msg)
@@ -56,7 +64,10 @@ char	*execute_check(char *command, char **path)
 	if (command[0] == '.' || command[0] == '/')
 	{
 		if (access(command, X_OK) != 0)
-			print_perror("access");
+		{
+			print_perror(command);
+			return (NULL);
+		}
 		full_path = ft_strdup(command);
 	}
 	else
@@ -65,12 +76,12 @@ char	*execute_check(char *command, char **path)
 		while (path[i])
 		{
 			full_path = ft_strjoin(path[i], command);
-			if (access(command, F_OK) == 0)
+			if (access(full_path, X_OK) == 0)
 				return (full_path);
 			free(full_path);
 			++i;
 		}
-		ft_printf("command not found\n");
+		print_err_msg(command, "command not found");
 		return (NULL);
 	}
 	return (full_path);
@@ -86,12 +97,6 @@ int	main(int argc, char **argv, char **env)
 	if (argc != 1)
 		print_error("Error: Invalid number of arguments.\nUsage: ./minishell");
 	path = get_path(env);
-	int i = 0;
-	while(path[i])
-	{
-		ft_printf("%s\n", path[i]);
-		i++;
-	}
 	while (1)
 	{
 		command = readline("minishell$ ");
@@ -99,6 +104,7 @@ int	main(int argc, char **argv, char **env)
 			add_history(command);
 		if (ft_strncmp(command, "exit", 5) == 0)
 		{
+			ft_printf("exit\n");
 			free(command);
 			break ;
 		}
