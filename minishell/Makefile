@@ -6,7 +6,7 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/07 21:56:35 by jihyeole          #+#    #+#              #
-#    Updated: 2023/05/10 23:31:22 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/11 18:21:30 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ LIBS = -Llibft -lft
 all : $(NAME)
 
 $(NAME) : $(OBJS)
-	make -C libft
+	make -C libft bonus
 	$(CC) $(OBJS) $(LIBS) -o $(NAME) -lreadline
 
 %.o : %.c 
