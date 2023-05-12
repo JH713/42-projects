@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:00:08 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/11 20:04:05 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/12 12:38:34 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,16 @@ void	ft_env_lst_unset(t_list **head, char *unset_str)
 	}
 }
 
+char	*get_key(char *command)
+{
+	char	*key;
+	int i = 0;
+	while (command[i] != '=')
+		++i;
+	key = ft_substr(command, 0, i + 1);
+	return (key);
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	char	*command;
@@ -144,9 +154,30 @@ int	main(int argc, char **argv, char **env)
 		}
 		else if (ft_strncmp(command, "export ", 7) == 0)
 		{
-			// env에서 export뒤에 key=찾아서 있으면 이 값으로 바꿔줘야함
+			char *key = get_key(&command[7]);
+			int flag = 0;
+			i = 0;
+			while (i < env_num)
+			{
+				if (env[i] == NULL)
+					continue ;
+				if (ft_strncmp(env[i], key, ft_strlen(key)) == 0)
+				{
+					env[i] = ft_strdup(&command[7]);
+					flag = 1;
+					break ;
+				}
+				++i;
+			}
+			free (key);
+			if (flag)
+			{
+				free(command);
+				continue ;
+			}
 			new_env = ft_lstnew(ft_strdup(&command[7]));
 			ft_lstadd_front(&env_head, new_env);
+			free(command);
 			continue ;
 		}
 		else if (ft_strncmp(command, "unset ", 6) == 0)
@@ -167,6 +198,7 @@ int	main(int argc, char **argv, char **env)
 			}
 			ft_env_lst_unset(&env_head, unset_str);
 			free(unset_str);
+			free(command);
 			continue ;
 		}
 		full_path = execute_check(command, path);
