@@ -6,11 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:00:08 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/12 12:38:34 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/12 23:20:40 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+char	*command;
 
 char	**get_path(char **env)
 {
@@ -116,15 +118,132 @@ char	*get_key(char *command)
 	return (key);
 }
 
+int builtin_func(char *command, char **env, int env_num, t_list **env_head)
+{
+	int	i;
+
+	if (ft_strncmp(command, "exit", 5) == 0)
+	{
+		ft_printf("exit\n");
+		free(command);
+		exit(0);
+	}
+	else if (ft_strncmp(command, "env", 4) == 0)
+	{
+		print_env(env, env_num);
+		free(command);
+		ft_lstiter(*env_head, ft_putendl_stdout);
+		return (1);
+	}
+	else if (ft_strncmp(command, "export ", 7) == 0)
+	{
+		t_list *new_env;
+		char *key = get_key(&command[7]);
+		int flag = 0;
+		i = 0;
+		while (i < env_num)
+		{
+			if (env[i] == NULL)
+				continue ;
+			if (ft_strncmp(env[i], key, ft_strlen(key)) == 0)
+			{
+				env[i] = ft_strdup(&command[7]);
+				flag = 1;
+				break ;
+			}
+			++i;
+		}
+		free (key);
+		if (flag)
+		{
+			free(command);
+			return (1);
+		}
+		new_env = ft_lstnew(ft_strdup(&command[7]));
+		ft_lstadd_front(env_head, new_env);
+		free(command);
+		return (1);
+	}
+	else if (ft_strncmp(command, "unset ", 6) == 0)
+	{
+		i = 0;
+		char *unset_str = ft_strjoin(&command[6], "=");
+		int	unset_str_len = ft_strlen(unset_str);
+		while (i < env_num)
+		{
+			if (env[i] == NULL)
+				continue ;
+			if (ft_strncmp(env[i], unset_str, unset_str_len) == 0)
+			{
+				env[i] = NULL;
+				break ;
+			}
+			++i;
+		}
+		ft_env_lst_unset(env_head, unset_str);
+		free(unset_str);
+		free(command);
+		return (1);
+	}
+	else if (ft_strncmp(command, "pwd", 4) == 0)
+	{
+		char *buf = NULL;
+		buf = getcwd(buf, 0);
+		ft_printf("%s\n", buf);
+		free(buf);
+		free(command);
+		return (1);
+	}
+	else if (ft_strncmp(command, "cd ", 3) == 0)
+	{
+		int ret;
+		if (command[3] == '/' || command[3] == '.')
+			ret = chdir(&command[3]);
+		else
+		{
+			char *f_path = 0;
+			char *buf = NULL;
+			buf = getcwd(buf, 0);
+			f_path = ft_strjoin(buf, "/");
+			free(buf);
+			buf = f_path;
+			f_path = ft_strjoin(buf, &command[3]);
+			free(buf);
+			ret = chdir(f_path);
+			free(f_path);
+		}
+		if (ret == -1)
+			minishell_perror("cd");
+		free(command);
+		return (1);
+	}
+	else if (ft_strncmp(command, "echo -n ", 8) == 0)
+	{
+		ft_printf("%s", &command[8]);
+		return (1);
+	}
+	return (0);
+}
+
+void	sigint_handler(int signo, siginfo_t *info, void *p)
+{
+	(void)signo;
+	(void)info;
+	(void)p;
+	write(1, "\n", 1);
+	rl_on_new_line();
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
 int	main(int argc, char **argv, char **env)
 {
-	char	*command;
 	char	**path;
 	char	*full_path;
 	t_list	*env_head;
-	t_list	*new_env;
 	int		env_num;
-	int		i;
+	struct sigaction	sigint_act;
+	// struct sigaction	act2;
 
 	(void)argv;
 	if (argc != 1)
@@ -134,73 +253,24 @@ int	main(int argc, char **argv, char **env)
 	env_num = 0;
 	while (env[env_num])
 		env_num++;
+	sigint_act.sa_sigaction = sigint_handler;
+	sigint_act.sa_flags = SA_SIGINFO;
+	sigaction(SIGINT, &sigint_act, NULL);
 	while (1)
 	{
 		command = readline("minishell$ ");
-		if (ft_strlen(command) != 0)
-			add_history(command);
-		if (ft_strncmp(command, "exit", 5) == 0)
+		if (command == NULL)
 		{
-			ft_printf("exit\n");
 			free(command);
+			ft_putstr_fd("\x1b[1A", 1);
+			ft_putstr_fd("\033[11C", 1);
+			write(1, "exit\n", 5);
 			break ;
 		}
-		else if (ft_strncmp(command, "env", 4) == 0)
-		{
-			print_env(env, env_num);
-			free(command);
-			ft_lstiter(env_head, ft_putendl_stdout);
+		if (ft_strlen(command) != 0)
+			add_history(command);
+		if (builtin_func(command, env, env_num, &env_head) == 1)
 			continue ;
-		}
-		else if (ft_strncmp(command, "export ", 7) == 0)
-		{
-			char *key = get_key(&command[7]);
-			int flag = 0;
-			i = 0;
-			while (i < env_num)
-			{
-				if (env[i] == NULL)
-					continue ;
-				if (ft_strncmp(env[i], key, ft_strlen(key)) == 0)
-				{
-					env[i] = ft_strdup(&command[7]);
-					flag = 1;
-					break ;
-				}
-				++i;
-			}
-			free (key);
-			if (flag)
-			{
-				free(command);
-				continue ;
-			}
-			new_env = ft_lstnew(ft_strdup(&command[7]));
-			ft_lstadd_front(&env_head, new_env);
-			free(command);
-			continue ;
-		}
-		else if (ft_strncmp(command, "unset ", 6) == 0)
-		{
-			i = 0;
-			char *unset_str = ft_strjoin(&command[6], "=");
-			int	unset_str_len = ft_strlen(unset_str);
-			while (i < env_num)
-			{
-				if (env[i] == NULL)
-					continue ;
-				if (ft_strncmp(env[i], unset_str, unset_str_len) == 0)
-				{
-					env[i] = NULL;
-					break ;
-				}
-				++i;
-			}
-			ft_env_lst_unset(&env_head, unset_str);
-			free(unset_str);
-			free(command);
-			continue ;
-		}
 		full_path = execute_check(command, path);
 		if (full_path == NULL)
 			continue ;
