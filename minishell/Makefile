@@ -6,12 +6,12 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/07 21:56:35 by jihyeole          #+#    #+#              #
-#    Updated: 2023/05/12 22:44:09 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/15 20:59:20 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
-SRCS = main.c error.c
+SRCS = main.c init.c utils.c env_lst.c env_utils.c make_heredoc.c error.c
 OBJS = $(SRCS:.c=.o)
 CC = CC
 CFLAGS = -Wall -Wextra -Werror -I ~/.brew/opt/readline/include

@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/30 15:22:09 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/02/17 20:52:22 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/15 15:26:47 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	char	*p;
 
 	if (s1 == NULL)
-		return ((char *)s2);
+		return (ft_strdup(s2));
 	if (s2 == NULL)
-		return ((char *)s1);
+		return (ft_strdup(s1));
 	s1_len = ft_strlen(s1);
 	s2_len = ft_strlen(s2);
 	p = (char *)malloc(s1_len + s2_len + 1);

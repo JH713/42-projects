@@ -1,0 +1,56 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   env_lst.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/05/15 11:58:33 by jihyeole          #+#    #+#             */
+/*   Updated: 2023/05/15 11:59:30 by jihyeole         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void	env_lst_add_back(t_env **lst, t_env *new)
+{
+	t_env	*temp;
+
+	if (new == NULL)
+		return ;
+	if (*lst == NULL)
+		*lst = new;
+	else
+	{
+		temp = *lst;
+		while (temp->next != NULL)
+			temp = temp->next;
+		temp->next = new;
+	}
+}
+
+t_env	*env_lst_new(char *env)
+{
+	t_env	*new_lst;
+	int		idx;
+
+	new_lst = (t_env *)malloc(sizeof(t_env));
+	idx = get_first_idx(env, '=');
+	new_lst->key = ft_substr(env, 0, idx);
+	new_lst->value = ft_substr(env, idx + 1, ft_strlen(env) - 1 - idx);
+	new_lst->next = NULL;
+	return (new_lst);
+}
+
+void	print_env(char **env, int env_num)
+{
+	int	i;
+
+	i = 0;
+	while (i < env_num)
+	{
+		if (env[i])
+			ft_putendl_fd(env[i], 1);
+		++i;
+	}
+}
