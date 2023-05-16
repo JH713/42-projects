@@ -6,7 +6,7 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/07 21:56:35 by jihyeole          #+#    #+#              #
-#    Updated: 2023/05/15 20:59:20 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/16 20:00:12 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,8 @@ all : $(NAME)
 
 $(NAME) : $(OBJS)
 	make -C libft bonus
-	$(CC) $(OBJS) $(LIBS) -o $(NAME) -lreadline -L ~/.brew/opt/readline/lib
+	$(CC) $(OBJS) $(LIBS) -o $(NAME) -lreadline -L ~/.brew/opt/readline/lib 
+# -g -fsanitize=address
 
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $< -o $@ 
