@@ -6,14 +6,14 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/07 21:56:35 by jihyeole          #+#    #+#              #
-#    Updated: 2023/05/17 22:27:40 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/17 23:10:24 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
 SRCS = main.c init.c utils.c env_utils1.c env_utils2.c make_heredoc.c \
-	   error.c redirect.c expand_env.c
-# SRCS = test.c err_test.c
+	   error.c redirect.c expand_env.c pipe.c finalization.c check.c \
+	   exec.c builtin.c
 OBJS = $(SRCS:.c=.o)
 CC = CC
 CFLAGS = -Wall -Wextra -Werror -I ~/.brew/opt/readline/include
