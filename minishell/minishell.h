@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:01:25 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 23:11:15 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 00:50:00 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,12 +65,11 @@ char	**get_path(t_env *env_lst);
 void	env_lst_add_back(t_env **lst, t_env *new);
 t_env	*env_lst_new(char *env);
 void	print_env(char **env, int env_num);
-void	minishell_error(char *command, char *err_msg);
-void	minishell_perror(char *msg);
+void	minishell_error(char *command, char *err_msg, int exit_num);
+void	minishell_perror(char *msg, int exit_num);
 void	print_error(char *msg, int status);
 int		unlink_heredocs(t_info *comm_info);
 int		create_heredoc_temp(t_info *info, t_env *env_lst);
-char	*get_env_value(t_env *env_lst, char *key);
 void	join_env(char **line, char *env_value, int start, int end);
 void	expand_env(char **line, t_env *env_lst);
 void	redirect_process(t_process *proc, t_info *info, int i);

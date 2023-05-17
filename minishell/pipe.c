@@ -6,11 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 23:00:09 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 23:00:41 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 01:07:18 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern int exit_status;
 
 void	create_pipe(t_process *process, int process_cnt)
 {

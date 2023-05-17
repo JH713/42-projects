@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 21:55:25 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 22:17:19 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 00:53:29 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ static void	redirect_input_file(t_redirect *input)
 			filepath = ft_strdup(input->file);
 		fd = open(filepath, O_RDONLY);
 		if (fd == -1)
-			minishell_perror(input->file);
+			minishell_perror(input->file, 1);
 		free(filepath);
 		dup2(fd, input_fd);
 		close(fd);
@@ -76,7 +76,7 @@ static void	redirect_output_file(t_redirect *output)
 		else
 			fd = open(filepath, O_WRONLY | O_CREAT | O_APPEND, 0644);
 		if (fd == -1)
-			minishell_perror(output->file);
+			minishell_perror(output->file, 1);
 		free(filepath);
 		dup2(fd, output_fd);
 		close(fd);

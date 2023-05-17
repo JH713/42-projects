@@ -6,11 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:33:01 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 23:26:52 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 01:33:50 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	exit_status;
 
 char	*read_command(void)
 {
@@ -34,32 +36,32 @@ t_info	*parse_command(char *command, t_env *env_lst)
 	// 파싱 구현
 	// syntax error NULL 반환 
 	t_info *info;
-	// t_redirect	*re;
+	t_redirect	*re;
 	(void)command;
 	(void)env_lst;
 	// char	**commands;
 	// char	**commands1;
 	// char	**commands2;
 
-	// re = (t_redirect *)malloc(sizeof(t_redirect) * 1);
-	// re[0].file = ft_strdup("EOF");
+	re = (t_redirect *)malloc(sizeof(t_redirect) * 1);
+	re[0].file = ft_strdup("EOF");
+	re[0].type = 1;
+	re[0].fd = NULL;
+	re[0].next = NULL;
 	// // re[1].file = ft_strdup("END");
-	// // re[2].file = ft_strdup("abc");
-	// re[0].type = 1;
-	// re[0].fd = NULL;
 	// // re[1].type = 1;
-	// // re[2].type = 2;
-	// re[0].next = NULL;
 	// re[1].next = NULL;
+	// // re[2].file = ft_strdup("abc");
+	// // re[2].type = 2;
 	// re[2].next = NULL;
 	info = (t_info *)malloc(sizeof(t_info));
 	info->process_num = 1;
 	info->heredoc_num = 0;
 	// commands = ft_split(command, ' ');
 	info->commands = (t_command *)malloc(sizeof(t_command) * 1);
-	info->commands[0].command = ft_split(command, ' ');
+	info->commands[0].command = ft_split("cat", ' ');
 	info->commands[0].output = NULL;
-	info->commands[0].input = NULL;
+	info->commands[0].input = re;
 	// info->commands = (t_command *)malloc(sizeof(t_command) * 3);
 	// info->commands[0].command = ft_split("cat main.c", ' ');
 	// info->commands[0].output = NULL;
@@ -86,6 +88,8 @@ int	main(int argc, char *argv[], char **env)
 	while (1)
 	{
 		command = read_command();
+		if (command == NULL)
+			continue ;
 		if (command[ft_strlen(command) - 1] == '|' && command[ft_strlen(command) - 2] != '|')
 		{
 			add = ft_strdup(" |");
@@ -111,6 +115,7 @@ int	main(int argc, char *argv[], char **env)
 			if (exec_single_builtin(info, &env_lst))
 			{
 				unlink_heredocs(info);
+				exit_status = 0;
 				continue ;
 			}
 		}
@@ -119,5 +124,6 @@ int	main(int argc, char *argv[], char **env)
 		fork_and_execute(process, info, &env_lst);
 		wait_all_child(info->process_num, process);
 		unlink_heredocs(info);
+		free(command);
 	}
 }

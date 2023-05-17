@@ -6,11 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/17 23:09:47 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 23:10:05 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 00:37:17 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern int exit_status;
 
 int	builtin_func(char **command, t_env **env_lst)
 {
@@ -54,6 +56,7 @@ int	builtin_func(char **command, t_env **env_lst)
 			if (lst == NULL)
 			{
 				ft_putendl_fd("minishell: cd: HOME path not found", 2);
+				exit_status = 1;
 				return (1);
 			}
 			ret = chdir(lst->value);
@@ -69,6 +72,7 @@ int	builtin_func(char **command, t_env **env_lst)
 		}
 		if (ret == -1)
 		{
+			exit_status = 1;
 			ft_putstr_fd("minishell: ", 2);
 			perror("cd");
 		}

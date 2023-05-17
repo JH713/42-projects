@@ -6,22 +6,11 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 20:56:40 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 22:25:31 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 00:17:52 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-char	*get_env_value(t_env *env_lst, char *key)
-{
-	while (env_lst)
-	{
-		if (ft_strncmp(env_lst->key, key, ft_strlen(key) + 1) == 0)
-			return (env_lst->value);
-		env_lst = env_lst->next;
-	}
-	return (NULL);
-}
 
 int	env_lst_size(t_env *lst)
 {
@@ -73,4 +62,18 @@ void	env_lstdelone(t_env *lst)
 	free(lst->key);
 	free(lst->value);
 	free(lst);
+}
+
+void	get_env_lst(t_env **env_lst, char **env)
+{
+	t_env	*new;
+	int		i;
+
+	i = 0;
+	while (env[i])
+	{
+		new = env_lst_new(env[i]);
+		env_lst_add_back(env_lst, new);
+		++i;
+	}
 }

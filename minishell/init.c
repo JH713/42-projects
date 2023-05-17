@@ -6,25 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/14 05:38:27 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/17 19:24:54 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/18 00:21:18 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	get_env_lst(t_env **env_lst, char **env)
-{
-	t_env	*new;
-	int		i;
-
-	i = 0;
-	while (env[i])
-	{
-		new = env_lst_new(env[i]);
-		env_lst_add_back(env_lst, new);
-		++i;
-	}
-}
+extern int exit_status;
 
 static void	sigint_handler(int sig)
 {
@@ -33,6 +21,7 @@ static void	sigint_handler(int sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
+	exit_status = 1;
 }
 
 void	init(int argc, char *argv[], char **env, t_env **env_lst)
