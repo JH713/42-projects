@@ -6,13 +6,13 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/14 05:38:27 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/15 14:26:57 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/17 19:24:54 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	get_env_lst(t_env **env_lst, char **env)
+void	get_env_lst(t_env **env_lst, char **env)
 {
 	t_env	*new;
 	int		i;

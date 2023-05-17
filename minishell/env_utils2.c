@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_utils.c                                        :+:      :+:    :+:   */
+/*   env_utils2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 20:56:40 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/15 20:57:18 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/17 22:25:31 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,50 +23,54 @@ char	*get_env_value(t_env *env_lst, char *key)
 	return (NULL);
 }
 
-void	join_env(char **line, char *env_value, int start, int end)
+int	env_lst_size(t_env *lst)
 {
-	char	*temp;
-	char	*head;
-	char	*tail;
+	int	size;
 
-	temp = *line;
-	if (start == 0)
-		head = NULL;
-	else
-		head = ft_substr(temp, 0, start);
-	if (end == (int)ft_strlen(temp))
-		tail = NULL;
-	else
-		tail = ft_substr(temp, end, ft_strlen(temp) - end);
-	free(temp);
-	temp = ft_strjoin(head, env_value);
-	*line = ft_strjoin(temp, tail);
-	free(temp);
+	size = 0;
+	while (lst)
+	{
+		lst = lst->next;
+		++size;
+	}
+	return (size);
 }
 
-void	expand_env(char **line, t_env *env_lst)
+char	*get_env_str(t_env *env_lst)
+{
+	char	*temp;
+	char	*env_str;
+
+	if (env_lst == NULL)
+		return (NULL);
+	temp = ft_strjoin(env_lst->key, "=");
+	env_str = ft_strjoin(temp, env_lst->value);
+	free(temp);
+	return (env_str);
+}
+
+char	**env_lst_to_arr(t_env *env_lst)
 {
 	int		i;
-	int		j;
-	char	*env_key;
-	char	*env_value;
+	char	**env;
 
+	env = (char **)malloc(sizeof(char *) * (env_lst_size(env_lst) + 1));
 	i = 0;
-	while (*line && (*line)[i])
+	while (env_lst)
 	{
-		if ((*line)[i] == '$')
-		{
-			j = 1;
-			while (ft_inset((*line)[i + j], " \0$") == 0)
-				j++;
-			if (j == 1)
-				continue ;
-			env_key = ft_substr(&(*line)[i + 1], 0, j - 1);
-			env_value = get_env_value(env_lst, env_key);
-			join_env(line, env_value, i, i + j);
-			i += ft_strlen(env_value);
-		}
-		else
-			++i;
+		env[i] = get_env_str(env_lst);
+		env_lst = env_lst->next;
+		++i;
 	}
+	env[i] = NULL;
+	return (env);
+}
+
+void	env_lstdelone(t_env *lst)
+{
+	if (lst == NULL)
+		return ;
+	free(lst->key);
+	free(lst->value);
+	free(lst);
 }

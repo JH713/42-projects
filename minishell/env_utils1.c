@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_lst.c                                          :+:      :+:    :+:   */
+/*   env_utils1.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:58:33 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/15 11:59:30 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/17 22:26:51 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,45 @@ void	print_env(char **env, int env_num)
 	{
 		if (env[i])
 			ft_putendl_fd(env[i], 1);
+		++i;
+	}
+}
+
+t_env	*get_lst_by_key(t_env *env_lst, char *key)
+{
+	while (env_lst)
+	{
+		if (ft_strncmp(env_lst->key, key, (ft_strlen(key) + 1)) == 0)
+			return (env_lst);
+		env_lst = env_lst->next;
+	}
+	return (NULL);
+}
+
+void	env_lst_unset(t_env **env_lst, char **str)
+{
+	t_env	*lst;
+	t_env	*prev;
+	int		i;
+
+	i = 0;
+	while (str[i])
+	{
+		lst = *env_lst;
+		while (lst)
+		{
+			if (ft_strncmp(lst->key, str[i], (ft_strlen(lst->key) + 1)) == 0)
+			{
+				if (lst == *env_lst)
+					*env_lst = NULL;
+				else
+					prev->next = lst->next;
+				env_lstdelone(lst);
+				break ;
+			}
+			prev = lst;
+			lst = lst->next;
+		}
 		++i;
 	}
 }

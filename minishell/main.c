@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:33:01 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/16 21:07:10 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/17 22:35:43 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ char	*read_command(void)
 	command = readline("minishell$ ");
 	if (command == NULL)
 	{
-		free(command);
 		ft_putstr_fd("\x1b[1A", 1);
 		ft_putstr_fd("\033[11C", 1);
 		write(1, "exit\n", 5);
@@ -38,38 +37,35 @@ t_info	*parse_command(char *command, t_env *env_lst)
 	// t_redirect	*re;
 	(void)command;
 	(void)env_lst;
-	char	**commands;
-	char	**commands1;
+	// char	**commands;
+	// char	**commands1;
+	// char	**commands2;
 
-	// re = (t_redirect *)malloc(sizeof(t_redirect) * 3);
+	// re = (t_redirect *)malloc(sizeof(t_redirect) * 1);
 	// re[0].file = ft_strdup("EOF");
-	// re[1].file = ft_strdup("END");
-	// re[2].file = ft_strdup("abc");
+	// // re[1].file = ft_strdup("END");
+	// // re[2].file = ft_strdup("abc");
 	// re[0].type = 1;
-	// re[1].type = 1;
-	// re[2].type = 2;
-	// re[0].next = &re[1];
+	// re[0].fd = NULL;
+	// // re[1].type = 1;
+	// // re[2].type = 2;
+	// re[0].next = NULL;
 	// re[1].next = NULL;
 	// re[2].next = NULL;
 	info = (t_info *)malloc(sizeof(t_info));
-	info->process_num = 2;
+	info->process_num = 1;
 	info->heredoc_num = 0;
-	commands = (char **)malloc(sizeof(char *) * 2);
-	commands[0] = ft_strdup("ls");
-	commands[1] = NULL;
-	commands1 = (char **)malloc(sizeof(char *) * 2);
-	commands1[0] = ft_strdup("wc");
-	commands1[1] = NULL;
-	info->commands = (t_command *)malloc(sizeof(t_command) * 2);
-	info->commands[0].command = commands;
+	// commands = ft_split(command, ' ');
+	info->commands = (t_command *)malloc(sizeof(t_command) * 1);
+	info->commands[0].command = ft_split(command, ' ');
 	info->commands[0].output = NULL;
 	info->commands[0].input = NULL;
-	info->commands[1].command = commands1;
-	info->commands[1].output = NULL;
-	info->commands[1].input = NULL;
-	// t_redirect *input = info->commands[0].input;
-	// ft_printf("%s\n", input->file);
-	// ft_printf("%s\n", input->next->file);
+	// info->commands[1].command = ft_split("wc", ' ');
+	// info->commands[1].output = NULL;
+	// info->commands[1].input = NULL;
+	// info->commands[2].command = ft_split("cat", ' ');
+	// info->commands[2].output = NULL;
+	// info->commands[2].input = NULL;
 	return (info);
 }
 
@@ -91,17 +87,17 @@ void	create_pipe(t_process *process, int process_cnt)
 	int	i;
 
 	i = 0;
-	while (i < process_cnt -1)
+	while (i < process_cnt - 1)
 	{
-		// process[i].n = i;
+		process[i].n = i;
 		if (pipe(process[i].fd) == -1)
 			print_error("pipe", 0);
 		++i;
 	}
-	// process[i].n = i;
+	process[i].n = i;
 }
 
-void	close_all_fds(int start, int end, t_process *process)
+void	close_unused_pipes(int start, int end, t_process *process)
 {
 	while (start <= end)
 	{
@@ -121,79 +117,6 @@ int	fd_check(char *fd)
 	if (fd_num >= 256)
 		minishell_error(fd, strerror(9));
 	return (fd_num);
-}
-
-void	redirect_input(t_process *proc, t_redirect *input)
-{
-	int		fd;
-	int		input_fd;
-	char	*filepath;
-
-	if (proc->n != 0)
-	{
-		close(0);
-		dup2(proc[proc->n - 1].fd[0], 0);
-		close(proc[proc->n - 1].fd[0]);
-	}
-	while (input)
-	{
-		input_fd = fd_check(input->fd);
-		if (input->type == 0 || input->type == 1 || input->type == 2)
-		{
-			if (input->file[0] != '/')
-				filepath = ft_strjoin("./", input->file);
-			else
-				filepath = ft_strdup(input->file);
-			fd = open(filepath, O_RDONLY);
-			if (fd == -1)
-				minishell_perror(input->file);
-			free(filepath);
-			close(input_fd);
-			dup2(fd, input_fd);
-			close(fd);
-		}
-		else
-			print_error("input type error", 1);
-		input = input->next;
-	}
-}
-
-void	redirect_output(t_process *proc, t_redirect *output, int process_num)
-{
-	int		fd;
-	int		output_fd;
-	char	*filepath;
-
-	if (proc->n != process_num - 1)
-	{
-		close(1);
-		dup2(proc[proc->n].fd[1], 1);
-		close(proc[proc->n].fd[1]);
-	}
-	while (output)
-	{
-		output_fd = fd_check(output->fd);
-		if (output->type == 0 || output->type == 1)
-		{
-			if (output->file[0] != '/')
-				filepath = ft_strjoin("./", output->file);
-			else
-				filepath = ft_strdup(output->file);
-			if (output->type == 0)
-				fd = open(filepath, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			else
-				fd = open(filepath, O_WRONLY | O_CREAT | O_APPEND, 0644);
-			if (fd == -1)
-				minishell_perror(output->file);
-			free(filepath);
-			close(output_fd);
-			dup2(fd, output_fd);
-			close(fd);
-		}
-		else
-			print_error("input type error", 1);
-		output = output->next;
-	}
 }
 
 char	*execute_check(char *command, char **path)
@@ -220,64 +143,87 @@ char	*execute_check(char *command, char **path)
 	return (NULL);
 }
 
-void	redirect_process(t_process *proc, t_command *comm, int process_num)
+int	builtin_func(char **command, t_env **env_lst)
 {
-	redirect_input(proc, comm->input);
-	redirect_output(proc, comm->output, process_num);
-}
-
-int	env_lst_size(t_env *lst)
-{
-	int	size;
-
-	size = 0;
-	while (lst)
-	{
-		lst = lst->next;
-		++size;
-	}
-	return (size);
-}
-
-char	*get_env_str(t_env *env_lst)
-{
-	char	*temp;
-	char	*env_str;
-
-	if (env_lst == NULL)
-		return (NULL);
-	temp = ft_strjoin(env_lst->key, "=");
-	env_str = ft_strjoin(temp, env_lst->value);
-	free(temp);
-	return (env_str);
-}
-
-char	**env_lst_to_arr(t_env *env_lst)
-{
-	int		i;
 	char	**env;
+	int		env_num;
 
-	env = (char **)malloc(sizeof(char *) * (env_lst_size(env_lst) + 1));
-	i = 0;
-	while (env_lst)
+	env = env_lst_to_arr(*env_lst);
+	env_num = env_lst_size(*env_lst);
+	if (ft_strncmp(command[0], "exit", 5) == 0 && command[1] == NULL)
+		exit(0);
+	else if (ft_strncmp(command[0], "env", 4) == 0 && command[1] == NULL)
 	{
-		env[i] = get_env_str(env_lst);
-		env_lst = env_lst->next;
-		++i;
+		print_env(env, env_num);
+		return (1);
 	}
-	env[i] = NULL;
-	return (env);
+	else if (ft_strncmp(command[0], "export", 7) == 0 && command[1])
+	{
+		get_env_lst(env_lst, &command[1]);
+		return (1);
+	}
+	else if (ft_strncmp(command[0], "unset", 6) == 0 && command[1])
+	{
+		env_lst_unset(env_lst, &command[1]);
+		return (1);
+	}
+	else if (ft_strncmp(command[0], "pwd", 4) == 0 && command[1] == NULL)
+	{
+		char	*buf = NULL;
+		buf = getcwd(buf, 0);
+		ft_printf("%s\n", buf);
+		free(buf);
+		return (1);
+	}
+	else if (ft_strncmp(command[0], "cd", 3) == 0)
+	{
+		int ret;
+		if (command[1] == NULL)
+		{
+			t_env *lst;
+			lst = get_lst_by_key(*env_lst, "HOME");
+			if (lst == NULL)
+			{
+				ft_putendl_fd("minishell: cd: HOME path not found", 2);
+				return (1);
+			}
+			ret = chdir(lst->value);
+		}
+		else if (command[1][0] == '/' || command[1][0] == '.')
+			ret = chdir(command[1]);
+		else
+		{
+			char *full_path = NULL;
+			full_path = ft_strjoin("./", command[1]);
+			ret = chdir(full_path);
+			free(full_path);
+		}
+		if (ret == -1)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			perror("cd");
+		}
+		return (1);
+	}
+	else if (ft_strncmp(command[0], "echo", 5) == 0 && ft_strncmp(command[1], "-n", 3) == 0)
+	{
+		if (command[2] != NULL)
+			ft_printf("%s", command[2]);
+		return (1);
+	}
+	return (0);
 }
 
-void	fork_and_execute(t_process *proc, t_info *info, t_env *env_lst)
+void	fork_and_execute(t_process *proc, t_info *info, t_env **env_lst)
 {
 	int		i;
 	char	**path;
 	char	*full_path;
 	char	**env;
+	char	**command;
 
 	i = 0;
-	path = get_path(env_lst);
+	path = get_path(*env_lst);
 	while (i < info -> process_num)
 	{
 		proc[i].pid = fork();
@@ -285,16 +231,19 @@ void	fork_and_execute(t_process *proc, t_info *info, t_env *env_lst)
 			print_error("fork", 0);
 		if (proc[i].pid == 0)
 		{
-			close_all_fds(i + 1, info->process_num - 2, proc);
+			close_unused_pipes(i + 1, info->process_num - 2, proc);
 			if (i < info->process_num - 1)
 				close(proc[i].fd[0]);
-			redirect_process(&proc[i], &info->commands[i], info->process_num);
-			full_path = execute_check(info->commands[i].command[0], path);
-			free(info->commands[i].command[0]);
-			info->commands[i].command[0] = full_path;
-			env = env_lst_to_arr(env_lst);
-			execve(info->commands[i].command[0], info->commands[i].command, env);
-			perror(info->commands[i].command[0]);
+			redirect_process(proc, info, i);
+			command = info->commands[i].command;
+			if (builtin_func(command, env_lst))
+				exit (0);
+			full_path = execute_check(command[0], path);
+			free(command[0]);
+			command[0] = full_path;
+			env = env_lst_to_arr(*env_lst);
+			execve(command[0], command, env);
+			perror(command[0]);
 			exit(1);
 		}
 		if (i == 0)
@@ -323,32 +272,47 @@ void	wait_all_child(int process_cnt, t_process *process)
 	}
 }
 
+int	exec_single_builtin(t_info *info, t_env **env_lst)
+{
+	char	**path;
+	char	**command;
+
+	path = get_path(*env_lst);
+	redirect_process(NULL, info, 0);
+	command = info->commands[0].command;
+	return (builtin_func(command, env_lst));
+}
+
 int	main(int argc, char *argv[], char **env)
 {
 	t_env		*env_lst;
 	char		*command;
-	t_info		*comm_info;
+	t_info		*info;
 	t_process	*process;
 
 	init(argc, argv, env, &env_lst);
 	while (1)
 	{
 		command = read_command();
-		comm_info = parse_command(command, env_lst);
-		if (comm_info == NULL)
+		if (ft_strncmp(command, "", 1) == 0) //나중에 parse에서 처리 
 			continue ;
-		if (create_heredoc_temp(comm_info, env_lst) == 0)
+		info = parse_command(command, env_lst);
+		if (info == NULL)
 			continue ;
-		process = (t_process *)malloc(sizeof(t_process) * comm_info->process_num);
-		create_pipe(process, comm_info->process_num);
-		int	i = 0;
-		while (i < comm_info->process_num)
+		if (create_heredoc_temp(info, env_lst) == 0)
+			continue ;
+		if (info->process_num == 1)
 		{
-			process[i].n = i;
-			++i;
+			if (exec_single_builtin(info, &env_lst))
+			{
+				unlink_heredocs(info);
+				continue ;
+			}
 		}
-		fork_and_execute(process, comm_info, env_lst);
-		wait_all_child(comm_info->process_num, process);
-		unlink_heredocs(comm_info);
+		process = (t_process *)malloc(sizeof(t_process) * info->process_num);
+		create_pipe(process, info->process_num);
+		fork_and_execute(process, info, &env_lst);
+		wait_all_child(info->process_num, process);
+		unlink_heredocs(info);
 	}
 }

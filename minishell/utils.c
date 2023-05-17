@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/15 11:56:21 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/16 20:49:58 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/17 21:08:00 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ char	**get_path(t_env *env_lst)
 	if (env_lst)
 		path = ft_split(env_lst->value, ':');
 	else
-		path = NULL;
+		return (NULL);
 	i = 0;
 	while (path[i])
 	{

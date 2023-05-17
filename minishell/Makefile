@@ -6,12 +6,14 @@
 #    By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/05/07 21:56:35 by jihyeole          #+#    #+#              #
-#    Updated: 2023/05/16 20:00:12 by jihyeole         ###   ########.fr        #
+#    Updated: 2023/05/17 22:27:40 by jihyeole         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = minishell
-SRCS = main.c init.c utils.c env_lst.c env_utils.c make_heredoc.c error.c
+SRCS = main.c init.c utils.c env_utils1.c env_utils2.c make_heredoc.c \
+	   error.c redirect.c expand_env.c
+# SRCS = test.c err_test.c
 OBJS = $(SRCS:.c=.o)
 CC = CC
 CFLAGS = -Wall -Wextra -Werror -I ~/.brew/opt/readline/include
@@ -21,8 +23,7 @@ all : $(NAME)
 
 $(NAME) : $(OBJS)
 	make -C libft bonus
-	$(CC) $(OBJS) $(LIBS) -o $(NAME) -lreadline -L ~/.brew/opt/readline/lib 
-# -g -fsanitize=address
+	$(CC) $(OBJS) $(LIBS) -o $(NAME) -lreadline -L ~/.brew/opt/readline/lib -g -fsanitize=address
 
 %.o : %.c 
 	$(CC) $(CFLAGS) -c $< -o $@ 

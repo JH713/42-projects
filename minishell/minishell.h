@@ -6,7 +6,7 @@
 /*   By: jihyeole <jihyeole@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/07 22:01:25 by jihyeole          #+#    #+#             */
-/*   Updated: 2023/05/16 20:50:03 by jihyeole         ###   ########.fr       */
+/*   Updated: 2023/05/17 22:27:09 by jihyeole         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ typedef struct s_process
 }	t_process;
 
 void	init(int argc, char *argv[], char **env, t_env **env_lst);
+void	get_env_lst(t_env **env_lst, char **env);
 int		get_first_idx(char *str, char c);
 char	**get_path(t_env *env_lst);
 void	env_lst_add_back(t_env **lst, t_env *new);
@@ -72,5 +73,13 @@ int		create_heredoc_temp(t_info *info, t_env *env_lst);
 char	*get_env_value(t_env *env_lst, char *key);
 void	join_env(char **line, char *env_value, int start, int end);
 void	expand_env(char **line, t_env *env_lst);
+void	redirect_process(t_process *proc, t_info *info, int i);
+int		fd_check(char *fd);
+int		env_lst_size(t_env *lst);
+char	*get_env_str(t_env *env_lst);
+char	**env_lst_to_arr(t_env *env_lst);
+void	env_lstdelone(t_env *lst);
+t_env	*get_lst_by_key(t_env *env_lst, char *key);
+void	env_lst_unset(t_env **env_lst, char **str);
 
 #endif
