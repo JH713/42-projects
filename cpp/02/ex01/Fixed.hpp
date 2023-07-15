@@ -1,25 +1,28 @@
-#ifndef __FIXED_H__
-#define __FIXED_H__
+#ifndef FIXED_HPP
+#define FIXED_HPP
 
 #include <iostream>
+#include <cmath>
 
 class Fixed {
 private:
 	int fixedNum;
-	static const int fracBitNum = 8;
+	static const int fracBits = 8;
 public:
 	Fixed();
-	Fixed(const int num);
-	Fixed(const float num);
 	Fixed(const Fixed &copy);
 	Fixed& operator=(const Fixed &ref);
 	~Fixed();
-	
-	int getRawBits(void) const; 
+
+	int getRawBits(void) const;
 	void setRawBits(int const raw);
+
+	Fixed(const int intNum);
+	Fixed(const float floatNum);
 	float toFloat(void) const;
 	int toInt(void) const;
-	std::ostream& operator<<(const Fixed &ref);
 };
+
+std::ostream& operator<<(std::ostream& os, const Fixed& ref);
 
 #endif

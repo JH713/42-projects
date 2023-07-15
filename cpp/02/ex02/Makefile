@@ -1,5 +1,5 @@
-NAME = hiThisIsBrain
-SRCS = main.cpp
+NAME = nowWeAreTalking
+SRCS = main.cpp Fixed.cpp
 OBJS = $(SRCS:.cpp=.o)
 CXX = c++
 CXXFLAGS = -Wall -Wextra -Werror -std=c++98
