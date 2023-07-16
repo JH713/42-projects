@@ -111,25 +111,25 @@ bool Fixed::operator!=(const Fixed &ref)
 
 Fixed Fixed::operator+(const Fixed &ref)
 {
-	Fixed fix((const float) this->toFloat() + ref.toFloat());
+	Fixed fix(toFloat() + ref.toFloat());
 	return (fix);
 }
 
 Fixed Fixed::operator-(const Fixed &ref)
 {
-	Fixed fix((const float) this->toFloat() - ref.toFloat());
+	Fixed fix(toFloat() - ref.toFloat());
 	return (fix);
 }
 
 Fixed Fixed::operator*(const Fixed &ref)
 {
-	Fixed fix((const float) this->toFloat() * ref.toFloat());
+	Fixed fix(toFloat() * ref.toFloat());
 	return (fix);
 }
 
 Fixed Fixed::operator/(const Fixed &ref)
 {
-	Fixed fix((const float) this->toFloat() / ref.toFloat());
+	Fixed fix(toFloat() / ref.toFloat());
 	return (fix);
 }
 
