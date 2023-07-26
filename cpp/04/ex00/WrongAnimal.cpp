@@ -7,7 +7,7 @@ WrongAnimal::WrongAnimal(std::string type) : type(type)
 
 WrongAnimal::WrongAnimal(const WrongAnimal& copy)
 {
-	*this = copy;
+	type = copy.type;
 	std::cout<<"WrongAnimal has been created."<<std::endl;
 }
 

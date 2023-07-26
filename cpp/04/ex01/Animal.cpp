@@ -7,7 +7,7 @@ Animal::Animal(std::string type) : type(type)
 
 Animal::Animal(const Animal& copy)
 {
-	*this = copy;
+	type = copy.type;
 	std::cout<<"Animal has been created."<<std::endl;
 }
 

@@ -22,11 +22,6 @@ Animal::~Animal()
 	std::cout<<"Animal has been destroyed."<<std::endl;
 }
 
-void Animal::makeSound() const
-{
-	std::cout<<"..."<<std::endl;
-}
-
 std::string Animal::getType() const
 {
 	return (type);

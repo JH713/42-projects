@@ -5,9 +5,8 @@ Cat::Cat() : Animal("Cat")
 	std::cout<<"Cat has been created."<<std::endl;
 }
 
-Cat::Cat(const Cat& copy)
+Cat::Cat(const Cat& copy) : Animal(copy.type)
 {
-	*this = copy;
 	std::cout<<"Cat has been created."<<std::endl;
 }
 

@@ -9,7 +9,8 @@ void leaks(void)
 
 int main()
 {
-	//atexit(leaks);
+	// atexit(leaks);
+	// const Animal *animal = new Animal("animal");
 	const Animal* j = new Dog();
 	const Animal* i = new Cat();
 	
