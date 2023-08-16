@@ -3,7 +3,11 @@
 AMateria::AMateria() : type("none") {}
 AMateria::AMateria(std::string const & type) : type(type) {}
 AMateria::AMateria(AMateria& copy) : type(copy.type) {}
-AMateria& AMateria::operator=(AMateria& ref) { type = ref.type; }
+AMateria& AMateria::operator=(AMateria& ref)
+{ 
+	type = ref.type; 
+	return (*this);
+}
 AMateria::~AMateria() {}
 
 std::string const & AMateria::getType() const { return (type); }

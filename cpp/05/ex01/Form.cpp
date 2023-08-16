@@ -48,3 +48,9 @@ std::ostream& operator<<(std::ostream& os, const Form& ref)
 	os<<"Grade required to execute: "<<ref.getGradeExecute()<<std::endl;
 	return os;
 }
+
+const char *Form::GradeTooHighException::what() const throw()
+{ return "Grade is too high!"; }
+
+const char *Form::GradeTooLowException::what() const throw ()
+{ return "Grade is too low!"; }

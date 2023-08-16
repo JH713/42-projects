@@ -16,21 +16,9 @@ int main(void)
 		A.signForm(form1);
 		std::cout<<form1;
 	}
-	catch(Bureaucrat::GradeTooHighException& e)
+	catch(std::exception& e)
 	{
-		std::cout<<"Grade is too high!"<<std::endl;
-	}
-	catch(Bureaucrat::GradeTooLowException& e)
-	{
-		std::cout<<"Grade is too low!"<<std::endl;
-	}
-	catch(Form::GradeTooHighException& e)
-	{
-		std::cout<<"Grade is too high!"<<std::endl;
-	}
-	catch(Form::GradeTooLowException& e)
-	{
-		std::cout<<"Grade is too low!"<<std::endl;
+		std::cout<<e.what()<<std::endl;
 	}
 	return 0;
 }

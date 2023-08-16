@@ -28,8 +28,17 @@ public:
 	int getGradeExecute() const;
 	void beSigned(Bureaucrat &b);
 
-	class GradeTooHighException {};
-	class GradeTooLowException {};
+	class GradeTooHighException : public std::exception 
+	{
+	public:
+		const char *what() const throw();
+	};
+
+	class GradeTooLowException : public std::exception 
+	{
+	public:
+		const char *what() const throw();
+	};
 };
 
 std::ostream& operator<<(std::ostream& os, const Form& ref);

@@ -5,6 +5,7 @@
 # include <iostream>
 # include "ICharacter.hpp"
 
+class ICharacter;
 
 class AMateria
 {
@@ -16,7 +17,7 @@ public:
 	AMateria(std::string const & type);
 	AMateria(AMateria& copy);
 	AMateria& operator=(AMateria& ref);
-	~AMateria();
+	virtual ~AMateria();
 
 	std::string const & getType() const;
 

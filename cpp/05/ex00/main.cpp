@@ -14,15 +14,11 @@ int main(void)
 		std::cout<<D;
 		D.decrementGrade();
 		std::cout<<D;
-		//D.decrementGrade();
+		// D.decrementGrade();
 	}
-	catch(Bureaucrat::GradeTooHighException& e)
+	catch(std::exception& e)
 	{
-		std::cout<<"Grade is too high!"<<std::endl;
-	}
-	catch(Bureaucrat::GradeTooLowException& e)
-	{
-		std::cout<<"Grade is too low!"<<std::endl;
+		std::cout<<e.what()<<std::endl;
 	}
 	return 0;
 }

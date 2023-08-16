@@ -1,8 +1,9 @@
 NAME = interface
-SRCS = main.cpp
+SRCS = main.cpp AMateria.cpp Character.cpp Cure.cpp\
+	   Ice.cpp MateriaSource.cpp Node.cpp LinkedList.cpp
 OBJS = $(SRCS:.cpp=.o)
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -std=c++98
+CXXFLAGS = -Wall -Wextra -Werror -std=c++98 
 
 all : $(NAME)
 

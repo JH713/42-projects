@@ -3,6 +3,7 @@
 
 # include <string>
 # include <iostream>
+# include <stdexcept>
 
 class Bureaucrat
 {
@@ -22,8 +23,17 @@ public:
 	void incrementGrade();
 	void decrementGrade();
 
-	class GradeTooHighException {};
-	class GradeTooLowException {};
+	class GradeTooHighException : public std::exception 
+	{
+	public:
+		const char *what() const throw();
+	};
+
+	class GradeTooLowException : public std::exception 
+	{
+	public:
+		const char *what() const throw();
+	};
 };
 
 std::ostream& operator<<(std::ostream& os, const Bureaucrat& ref);

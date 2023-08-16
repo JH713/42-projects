@@ -53,3 +53,9 @@ std::ostream& operator<<(std::ostream& os, const Bureaucrat& ref)
 	os<<ref.getName()<<", bureaucrat grade "<<ref.getGrade()<<"."<<std::endl;
 	return os;
 }
+
+const char *Bureaucrat::GradeTooHighException::what() const throw()
+{ return "Grade is too high!"; }
+
+const char *Bureaucrat::GradeTooLowException::what() const throw ()
+{ return "Grade is too low!"; }
