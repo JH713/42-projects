@@ -3,6 +3,9 @@
 
 # include <string>
 # include <iostream>
+# include <sstream>
+# include <cctype>
+# include <limits>
 
 class ScalarConverter
 {
