@@ -5,7 +5,7 @@ ScalarConverter::ScalarConverter(ScalarConverter& copy) { (void) copy; }
 ScalarConverter& ScalarConverter::operator=(const ScalarConverter& ref) { (void) ref; return (*this); }
 ScalarConverter::~ScalarConverter() {}
 
-void convertChar(std::string str)
+static void convertChar(std::string str)
 {
 	std::stringstream ss;
 	ss << str;
@@ -19,7 +19,7 @@ void convertChar(std::string str)
 	std::cout << "double: " << static_cast<double>(ch) << std::endl; 
 }
 
-bool isInt(std::string str)
+static bool isInt(std::string str)
 {
 	for (int i = 0; i < static_cast<int>(str.length()); ++i)
 	{
@@ -31,7 +31,7 @@ bool isInt(std::string str)
 	return true;
 }
 
-void print_impossible(void)
+static void print_impossible(void)
 {
 	std::cout << "char: impossible" << std::endl; 
 	std::cout << "int: impossible" << std::endl; 
@@ -39,9 +39,14 @@ void print_impossible(void)
 	std::cout << "double: impossible" << std::endl;
 }
 
-void convertInt(std::string str)
+static void convertInt(std::string str)
 {
-	if (str.length() > 11) // 앞에서 시작하는 000들을 제외해야함 
+	int frontZero = 0;
+	if (str[0] == '-')
+		++frontZero; 
+	while (str[frontZero] == '0')
+		++frontZero;
+	if (static_cast<int>(str.length()) > 11 + frontZero)
 	{
 		print_impossible();
 		return ;
@@ -56,7 +61,9 @@ void convertInt(std::string str)
 		return ;
 	}
 	int num = static_cast<int>(temp);
-	if (isprint(num))
+	if (num > std::numeric_limits<char>::max() || num < std::numeric_limits<char>::min())
+		std::cout << "char: impossible" << std::endl; 
+	else if (isprint(num))
 		std::cout << "char: '" << static_cast<char>(num) << "'" << std::endl; 
 	else
 		std::cout << "char: Non displayable" << std::endl; 
@@ -67,17 +74,27 @@ void convertInt(std::string str)
 	std::cout << "double: " << static_cast<double>(num) << std::endl; 
 }
 
-bool isDouble(std::string str)
+static bool isDouble(std::string str)
 {
 	if (str.empty())
 		return false;
+	std::string pseudoLiterals[4] = {"inf", "+inf", "-inf", "nan"};
+	for (int i = 0; i < 4; ++i)
+	{
+		if (str == pseudoLiterals[i])
+			return true;
+	}
 	size_t idx = str.find('.');
-	if (idx == std::string::npos || idx == str.length() - 1)
+	if (idx == std::string::npos || idx == 0 || idx == str.length() - 1)
 		return false;
 	for (int i = 0; i < static_cast<int>(idx); ++i)
 	{
 		if (i == 0 && (str[i] == '+' || str[i] == '-'))
+		{
+			if (str[i + 1] == '.')
+				return false;
 			continue;
+		}
 		if (!isdigit(str[i]))
 			return false;
 	}
@@ -87,7 +104,7 @@ bool isDouble(std::string str)
 	return true;
 }
 
-bool isFloat(std::string str)
+static bool isFloat(std::string str)
 {
 	if (str[str.length() - 1] != 'f')
 		return false;
@@ -97,23 +114,94 @@ bool isFloat(std::string str)
 	return false;
 }
 
-void convertFloat(std::string str)
+static void convertFloat(std::string str)
 {
-	(void)str;
-	std::cout << "float\n";
+	str.resize(str.length() - 1);
+	std::string pseudoLiterals[4] = {"inf", "+inf", "-inf", "nan"};
+	for (int i = 0; i < 4; ++i)
+	{
+		if (str == pseudoLiterals[i])
+		{
+			if (i == 1)
+				str = str.substr(1);
+			std::cout << "char: impossible" << std::endl; 
+			std::cout << "int: impossible" << std::endl; 
+			std::cout << "float: " << str << 'f' << std::endl; 
+			std::cout << "double: " << str << std::endl;
+			return ;
+		}
+	}
+	try 
+	{
+		float num = stof(str);
+		if (num > std::numeric_limits<char>::max() || num < std::numeric_limits<char>::min())
+			std::cout << "char: impossible" << std::endl; 
+		else if (isprint(num))
+			std::cout << "char: '" << static_cast<char>(num) << "'" << std::endl; 
+		else
+			std::cout << "char: Non displayable" << std::endl; 
+		if (static_cast<double>(num) > std::numeric_limits<int>::max() || static_cast<double>(num) < std::numeric_limits<int>::min())
+			std::cout << "int: impossible" << std::endl; 
+		else
+			std::cout << "int: " << static_cast<int>(num) << std::endl; 
+		std::cout<<std::fixed;
+		std::cout.precision(1);
+		std::cout << "float: " << num << "f" << std::endl; 
+		std::cout << "double: " << static_cast<double>(num) << std::endl;
+	}
+	catch (std::out_of_range& e) 
+	{
+		print_impossible();
+	}
 }
 
-
-void convertDouble(std::string str)
+static void convertDouble(std::string str)
 {
-	(void)str;
-	std::cout << "double\n";
+	std::string pseudoLiterals[4] = {"inf", "+inf", "-inf", "nan"};
+	for (int i = 0; i < 4; ++i)
+	{
+		if (str == pseudoLiterals[i])
+		{
+			if (i == 1)
+				str = str.substr(1);
+			std::cout << "char: impossible" << std::endl; 
+			std::cout << "int: impossible" << std::endl; 
+			std::cout << "float: " << str << 'f' << std::endl; 
+			std::cout << "double: " << str << std::endl;
+			return ;
+		}
+	}
+	try 
+	{
+		double num = stod(str);
+		if (num > std::numeric_limits<char>::max() || num < std::numeric_limits<char>::min())
+			std::cout << "char: impossible" << std::endl; 
+		else if (isprint(num))
+			std::cout << "char: '" << static_cast<char>(num) << "'" << std::endl; 
+		else
+			std::cout << "char: Non displayable" << std::endl; 
+		if (static_cast<double>(num) > std::numeric_limits<int>::max() || static_cast<double>(num) < std::numeric_limits<int>::min())
+			std::cout << "int: impossible" << std::endl; 
+		else
+			std::cout << "int: " << static_cast<int>(num) << std::endl; 
+		std::cout<<std::fixed;
+		std::cout.precision(1);
+		if (num > std::numeric_limits<float>::max() || num < std::numeric_limits<float>::min())
+			std::cout << "float: impossible" << std::endl; 
+		else
+			std::cout << "float: " << static_cast<float>(num) << "f" << std::endl; 
+		std::cout << "double: " << num << std::endl;
+	}
+	catch (std::out_of_range& e) 
+	{
+		print_impossible();
+	}
 }
 
 void ScalarConverter::convert(std::string str)
 {
 	if (str.empty())
-		print_impossible();
+		std::cout << "Invalid input" << std::endl;
 	else if (str.length() == 1 && !isdigit(str[0]))
 		convertChar(str);
 	else if (isInt(str))
@@ -123,5 +211,5 @@ void ScalarConverter::convert(std::string str)
 	else if (isDouble(str))
 		convertDouble(str);
 	else
-		return ;
+		std::cout << "Invalid input" << std::endl;
 }  
