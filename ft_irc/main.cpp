@@ -1,5 +1,6 @@
 #include "Server.hpp"
 
+// argument가 유효한지 확인하는 함수 
 static bool isArgumentValid(int argc, char *argv[])
 {
 	if (argc != 3) {
