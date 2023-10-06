@@ -1,7 +1,7 @@
 #include "Server.hpp"
 
 // 생성자에서 서버 소켓을 생성하고 bind, listen 함, pollfd 초기화
-Server::Server(int port, std::string password) :_port(port), _password(password)
+Server::Server(int port, std::string password) :_port(port), _password(password), _name("PPL_IRC")
 {
 	time(&_startTime);
 
@@ -76,8 +76,8 @@ void Server::addClient()
 	fcntl(clientSocket, F_SETFL, O_NONBLOCK);
 	std::cout << "클라이언트 SOCKET FD: " << clientSocket << "\n";
 	
-	Client client(clientSocket);
-	_clientList.insert(std::pair<int, Client *>(clientSocket, &client));
+	Client *client = new Client(clientSocket); //나중에 delete로 지워주기 
+	_clientList.insert(std::pair<int, Client *>(clientSocket, client));
 	
 	for (int i = 1; i < POLLFD_SIZE; i++)
 	{
@@ -137,12 +137,70 @@ void Server::processBuffer(Client *client)
 		std::string command(token);
 		Message msg = parseMessage(token);
 		printMessage(msg);
-		executeCmd(&msg);
+		executeCmd(client, &msg);
 		token = strtok(NULL, END_CHARACTERS);
 	}
+	if (client->isRegistrationRequired())
+		registration(*client);
+	if (client->shouldBeDeleted())
+	{
+		//클라이언트 삭제 
+	}
+
 }
 
-void Server::executeCmd(Message *msg)
+// command 실행
+void Server::executeCmd(Client *client, Message *msg)
 {
+	std::string validCmds[] = {
+		"NICK", "USER", "PASS", "JOIN", "KICK", "INVITE", "TOPIC", 
+		"MODE", "PART", "QUIT", "PRIVMSG", "NOTICE", "PING", "CAP"
+	};
 
+	int index = 0;
+	while (index < 14 && validCmds[index] != msg->command)
+		index++;
+	
+	switch(index) {
+		case 0: nick(client, msg); break;
+		case 1: user(client, msg); break;
+		case 2: pass(client, msg); break;
+		// case 3: join(this, msg); break;
+		// case 4: kick(); break;
+		// case 5: invite(this, msg); break;
+		// case 6: topic(); break;
+		// case 7: mode(); break;
+		// case 8: part(this, msg); break;
+		// case 9: quit(*this, msg); break;
+		// case 10: privmsg(); break;
+		// case 11: notice(); break;
+		// case 12: ping(*this, msg); break;
+		case 13: cap(client); break; 
+		case 14: break; //맞는 command 없을 때 
+	}
+
+}
+
+bool Server::nicknameDupCheck(const std::string nick)
+{
+	std::map<int, Client *>::iterator iter = _clientList.begin();
+
+    while (iter != _clientList.end()){
+        if (iter->second->getNickname() == nick)
+            return true;
+        iter++;
+    }
+    return false;
+}
+
+void Server::registration(Client &client)
+{
+	client.sendMsg(RPL_WELCOME(client.getNickname(), client.getUsername(), client.getHostname()));
+	client.sendMsg(RPL_YOURHOST(client.getNickname(), _name, "1.0"));
+	client.sendMsg(RPL_CREATED(client.getNickname(), ctime(&_startTime)));
+	client.sendMsg(RPL_MYINFO(client.getNickname(), _name, "1.0", "Channel modes +ntikl", ""));
+	client.sendMsg(RPL_MOTDSTART(client.getNickname()));
+	client.sendMsg(RPL_MOTD(client.getNickname()));
+	client.sendMsg(RPL_ENDOFMOTD(client.getNickname()));
+	client.setIsRegistered(true);
 }

@@ -4,12 +4,14 @@
 #include "Irc.hpp"
 #include "Client.hpp"
 #include "Message.hpp"
+#include "DefineReplies.hpp"
 
 class Server
 {
 private:
 	int _port; // 포트 번호
 	std::string _password; // 비밀번호 
+	std::string _name; // 서버 이름 
 	time_t _startTime; //서버 시작 시간 
 
 	int _serverSocket; //서버 소켓 
@@ -20,21 +22,42 @@ private:
 	void addClient();
 	void handleReceivedData(int pollIdx);
 	void processBuffer(Client *client);
-	void executeCmd(Message *msg);
+	void executeCmd(Client *client, Message *msg);
+	bool nicknameDupCheck(const std::string nick);
 
 public:
 	Server(int port, std::string password);
 	~Server();
 
-	void run(); //서버 시작 
+	void run(); // 서버 시작 
+	void registration(Client &client);
 
+	// command
+	void    nick(Client *client, Message *msg);
+	void    user(Client *client, Message *msg);
+	void    welcomeMsg(Client &client);
+	void    pass(Client *client, Message *msg);
+	void    join(Client* client, Message *msg);
+	void    kick();
+	void    invite(Client* client, Message* msg);
+	void    topic();
+	void    mode();
+	void    part(Client *client, Message *msg);
+	void    quit(Client *client, Message *msg);
+	void    privmsg();
+	void    notice();
+	void    ping(Client &client, Message *msg);
+	void	cap(Client *client);
+
+	// 예외 클래스 - 예외 생기면 던지기 
 	class ServerException : public std::exception 
 	{
 	private:
-		char *msg;
+		std::string msg;
 	public:
-		ServerException(char *msg) : msg(msg) {}
-		const char *what() const throw() { return msg; }
+		ServerException(std::string msg) : msg(msg) {}
+		~ServerException() throw() {}
+		const char *what() const throw() { return msg.c_str(); }
 	};
 };
 
