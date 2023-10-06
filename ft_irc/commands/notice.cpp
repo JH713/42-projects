@@ -1,3 +1,6 @@
 #include "../Server.hpp"
 
-void    notice() {}
+void Server::notice() 
+{
+	
+}

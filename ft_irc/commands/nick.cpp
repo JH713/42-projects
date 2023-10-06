@@ -14,7 +14,7 @@ static bool	validNickName(std::string nickname)
 	return true;
 }
 
-void    Server::nick(Client *client, Message *msg) 
+void Server::nick(Client *client, Message *msg) 
 {
 	std::string currNickname = client->getNickname();
 

@@ -1,3 +1,6 @@
 #include "../Server.hpp"
 
-void    topic() {}
+void Server::topic() 
+{
+	
+}

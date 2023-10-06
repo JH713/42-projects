@@ -1,3 +1,6 @@
 #include "../Server.hpp"
 
-void    privmsg() {}
+void Server::privmsg() 
+{
+	
+}

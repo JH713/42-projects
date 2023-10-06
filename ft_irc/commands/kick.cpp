@@ -1,3 +1,6 @@
 #include "../Server.hpp"
 
-void    kick() {}
+void Server::kick() 
+{
+
+}

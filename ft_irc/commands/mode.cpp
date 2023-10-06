@@ -1,3 +1,6 @@
 #include "../Server.hpp"
 
-void    mode() {}
+void Server::mode() 
+{
+	
+}

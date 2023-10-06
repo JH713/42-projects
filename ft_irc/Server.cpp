@@ -86,6 +86,7 @@ void Server::addClient()
 			_pollFd[i].fd = clientSocket;
 			_pollFd[i].events = POLLIN;
 			_pollFd[i].revents = 0;
+			client->setPollFdIdx(i);
 			std::cout << "connection successful\n";
 			break;
 		}
@@ -112,10 +113,7 @@ void Server::handleReceivedData(int pollIdx)
 		currClient->setReadBuf(buf);
 
 		if (currClient->getReadBuf().find(END_CHARACTERS) != std::string::npos)
-		{
 			processBuffer(currClient);
-			currClient->clearReadBuf();
-		}
 	}
 
 }
@@ -140,14 +138,18 @@ void Server::processBuffer(Client *client)
 		executeCmd(client, &msg);
 		token = strtok(NULL, END_CHARACTERS);
 	}
-	if (client->isRegistrationRequired())
+	if (client->isRegistrationRequired()) // 클라이언트 등록되어야할 때  
 		registration(*client);
-	if (client->shouldBeDeleted())
+	if (client->shouldBeDeleted()) // 클라이언트가 삭제돼야할 때  
 	{
-		close(client->getClientSocket());
-		_clientList.erase(client->getClientSocket());
-		//pollfd에서 client 제거해야함 
+		close(client->getClientSocket()); //소켓 닫기 
+		_clientList.erase(client->getClientSocket()); // clientList에서 해당 소켓 삭제
+		_pollFd[client->getPollFdIdx()].fd = -1; //pollFd에서 fd 삭제
+		delete client; // 클라이언트 삭제 
+		return ;
+		//quit해도 클라이언트 삭제해줘야 
 	}
+	client->clearReadBuf();
 }
 
 // command 실행
@@ -166,16 +168,16 @@ void Server::executeCmd(Client *client, Message *msg)
 		case 0: nick(client, msg); break;
 		case 1: user(client, msg); break;
 		case 2: pass(client, msg); break;
-		// case 3: join(this, msg); break;
-		// case 4: kick(); break;
-		// case 5: invite(this, msg); break;
-		// case 6: topic(); break;
-		// case 7: mode(); break;
-		// case 8: part(this, msg); break;
-		// case 9: quit(*this, msg); break;
-		// case 10: privmsg(); break;
-		// case 11: notice(); break;
-		// case 12: ping(*this, msg); break;
+		case 3: join(client, msg); break;
+		case 4: kick(); break;
+		case 5: invite(client, msg); break;
+		case 6: topic(); break;
+		case 7: mode(); break;
+		case 8: part(client, msg); break;
+		case 9: quit(client, msg); break;
+		case 10: privmsg(); break;
+		case 11: notice(); break;
+		case 12: ping(client, msg); break;
 		case 13: cap(client); break; 
 		case 14: break; //맞는 command 없을 때 
 	}
@@ -204,4 +206,69 @@ void Server::registration(Client &client)
 	client.sendMsg(RPL_MOTD(client.getNickname()));
 	client.sendMsg(RPL_ENDOFMOTD(client.getNickname()));
 	client.setIsRegistered(true);
+}
+
+void Server::createChannel(Client *owner, const std::string& channelName)
+{
+	std::vector<Channel *>::iterator iter = _channelList.begin();
+
+	while (iter != _channelList.end())
+	{
+		if ((*iter)->getName() == channelName)
+		{
+			std::cout << channelName << " 채널이 이미 존재합니다." << std::endl;
+			return ; //채널 이미 존재하니까 아무일도 안하고 그냥 나가는 것 
+		}
+		iter++;
+	}
+	try
+	{
+		Channel *newChannel = new Channel(owner, channelName); // 채널 나중에 없앨 때 delete 해주기
+		_channelList.push_back(newChannel);
+		std::cout << channelName << " 채널이 만들어졌습니다." << std::endl;
+	}
+	catch(const std::exception& e)
+    {
+        std::cerr << e.what() << '\n';
+        return ;
+    }
+}
+
+void Server::delChannel(const std::string& channelName)
+{
+	for (std::vector<Channel *>::iterator it = _channelList.begin(); it != _channelList.end(); ++it)
+	{
+		if ((*it)->getName() == channelName)
+		{
+			_channelList.erase(it);
+			delete *it; //채널 동적할당 해제 추가해줌 
+			return ;
+		}
+	}
+}
+
+Channel *Server::getChannel(const std::string channelName)
+{
+	std::vector<Channel *>::iterator iter = _channelList.begin();
+
+	while (iter != _channelList.end())
+	{
+		if ((*iter)->getName() == channelName)
+			return *iter;
+		iter++;
+	}
+	return NULL;
+} 
+
+Client *Server::getClient(const std::string& nickname)
+{
+	std::map<int, Client*>::iterator iter = _clientList.begin();
+
+	while (iter != _clientList.end())
+	{
+		if (iter->second->getNickname() == nickname)
+			return (iter->second);
+		iter++;
+	}
+	return (NULL);
 }

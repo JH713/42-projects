@@ -7,27 +7,28 @@ NAME = ircserv
 
 SRCS = main.cpp \
 		Server.cpp \
-		server_utils.cpp \
 		Client.cpp \
 		parsing.cpp \
+		Channel.cpp \
 		commands/cap.cpp \
 		commands/pass.cpp \
 		commands/nick.cpp \
-		commands/user.cpp
-# commands/invite.cpp \
-# commands/join.cpp \
-# commands/kick.cpp \
-# commands/mode.cpp \
-# commands/notice.cpp \
-# commands/part.cpp \
-# commands/ping.cpp \
-# commands/privmsg.cpp \
-# commands/quit.cpp \
-# commands/topic.cpp 
+		commands/user.cpp \
+		commands/join.cpp \
+		commands/ping.cpp \
+		commands/invite.cpp \
+		commands/kick.cpp \
+		commands/mode.cpp \
+		commands/notice.cpp \
+		commands/part.cpp \
+		commands/privmsg.cpp \
+		commands/quit.cpp \
+		commands/topic.cpp 
 		
 DEPS = Server.hpp \
 		Irc.hpp \
 		Client.hpp \
+		Channel.hpp \
 		Message.hpp \
 		DefineReplies.hpp
 
