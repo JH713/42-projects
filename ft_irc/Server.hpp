@@ -1,10 +1,10 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include "Irc.hpp"
-#include "Client.hpp"
-#include "Message.hpp"
-#include "DefineReplies.hpp"
+# include "Irc.hpp"
+# include "Client.hpp"
+# include "Message.hpp"
+# include "DefineReplies.hpp"
 
 class Server
 {

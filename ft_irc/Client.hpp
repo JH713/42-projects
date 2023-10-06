@@ -27,6 +27,7 @@ public:
 	void setReadBuf(const std::string buf);
 	void clearReadBuf();
 
+	int getClientSocket() const;
 	std::string getNickname() const;
 	std::string getHostname() const;
 	std::string getUsername() const;

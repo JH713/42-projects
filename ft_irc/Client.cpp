@@ -13,6 +13,7 @@ void Client::setReadBuf(const std::string buf) { _readBuf += buf; }
 void Client::clearReadBuf() { _readBuf.clear(); }
 
 // getter
+int Client::getClientSocket() const {return _clientSocket; }
 std::string Client::getNickname() const { return _nickname; }
 std::string Client::getHostname() const { return _hostname; }
 std::string Client::getUsername() const { return _username; }

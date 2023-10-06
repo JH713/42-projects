@@ -144,9 +144,10 @@ void Server::processBuffer(Client *client)
 		registration(*client);
 	if (client->shouldBeDeleted())
 	{
-		//클라이언트 삭제 
+		close(client->getClientSocket());
+		_clientList.erase(client->getClientSocket());
+		//pollfd에서 client 제거해야함 
 	}
-
 }
 
 // command 실행

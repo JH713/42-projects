@@ -7,6 +7,7 @@ NAME = ircserv
 
 SRCS = main.cpp \
 		Server.cpp \
+		server_utils.cpp \
 		Client.cpp \
 		parsing.cpp \
 		commands/cap.cpp \
