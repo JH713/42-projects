@@ -1,13 +1,22 @@
 #ifndef ITER_HPP
 # define ITER_HPP
 
-# include <stdlib.h>
-
-template <typename T>
-void iter(T *arrPtr, size_t arrSize, void(*func)(T&))
+template <class T>
+void iter(T* arr, size_t len, void (*func)(T&))
 {
-	for (size_t i = 0; i < arrSize; ++i)
-		func(arrPtr[i]);
+	for (int i = 0; (size_t) i < len; i++) 
+	{
+		func(arr[i]);
+	}
+}
+
+template <class T>
+void iter(const T* arr, size_t len, void (*func)(const T&))
+{
+	for (int i = 0; (size_t) i < len; i++) 
+	{
+		func(arr[i]);
+	}
 }
 
 #endif

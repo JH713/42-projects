@@ -1,24 +1,23 @@
-#include "iter.hpp"
 #include <iostream>
-#include <string>
+#include "iter.hpp"
 
-template <typename T>
-void printElement(const T element)
+void printInt(const int& a)
 {
-	std::cout << element << std::endl;
+	std::cout << a << std::endl;
 }
 
-void addOne(int& num)
+template <class T>
+void increment(T& a)
 {
-	num += 1;
+	a = a + 1;
 }
 
-int main(void)
-{
-	int arr1[4] = {10, 20, 30, 40};
-	std::string arr2[3] = {"abc", "xyz", "pqr"};
 
-	::iter(arr1, 4, addOne);
-	::iter(arr1, 4, printElement);
-	::iter(arr2, 3, printElement);
+int main(void) 
+{
+	int arr[3] = {1, 2, 3};
+
+	iter<int>(arr, 3, printInt);
+	iter<int>(arr, 3, increment<int>);
+	iter<int>(arr, 3, printInt);
 }

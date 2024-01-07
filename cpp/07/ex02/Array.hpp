@@ -1,98 +1,100 @@
 #ifndef ARRAY_HPP
 # define ARRAY_HPP
 
-# include <stdexcept>
 #include <cstdlib>
 
-template <typename T>
-class Array
+template <class T>
+class Array 
 {
 private:
-	T *arr;
-	unsigned int length;
+	T* arr;
+	unsigned int len;
 public:
 	Array();
 	Array(unsigned int n);
-	Array(const Array& copy);
+	Array(const Array &copy);
 	Array& operator=(const Array& ref);
 	~Array();
 
-	T& operator[] (unsigned int n);
-	T operator[] (unsigned int n) const;
 	unsigned int size() const;
+
+	T& operator[](unsigned int idx);
+	T operator[](unsigned int idx) const;
 };
 
-template <typename T>
-Array<T>::Array()
-{ this->arr = 0; this->length = 0; }
+template <class T>
+Array<T>::Array() :arr(0), len(0) {}
 
-template <typename T>
-Array<T>::Array(unsigned int n)
-{ 
-	this->arr = new T[n]; 
-	for (unsigned int i = 0; i < n; i++)
-		this->arr[i] = 0;
-	this->length = n;
-}
-
-template <typename T>
-Array<T>::Array(const Array& copy)
+template <class T>
+Array<T>::Array(unsigned int n) :len(n)
 {
-	if (copy.length == 0)
-	{
-		this->arr = 0; 
-		this->length = 0;
-		return ;
-	}
-	this->arr = new T[copy.length];
-	for (int i = 0; i < copy.length; i++)
-		this->arr[i] = copy.arr[i];
-	this->length= copy.length;
+	if ( n == 0 ) arr = 0;
+	else arr = new T[n];
 }
 
-template <typename T>
+template <class T>
+Array<T>::Array(const Array &copy)
+{
+	if (copy.len == 0) 
+	{
+		arr = 0;
+		len = 0;
+	}
+	else 
+	{
+		arr = new T[copy.len];
+		len = copy.len;
+		for (int i = 0; (unsigned int) i < len; i++)
+			arr[i] = copy.arr[i];
+	}
+}
+
+template <class T>
 Array<T>& Array<T>::operator=(const Array& ref)
 {
-	if (this->length != 0)
-		delete []this->arr;
-	if (ref.length == 0)
+	if (arr) delete []arr;
+	if (ref.len == 0) 
 	{
-		this->arr = 0; 
-		this->length = 0;
-		return ;
+		arr = 0;
+		len = 0;
 	}
-	this->arr = new T[ref.length];
-	for (int i = 0; i < ref.length; i++)
-		this->arr[i] = ref.arr[i];
-	this->length = ref.length;
-	return (*this);
+	else 
+	{
+		arr = new T[ref.len];
+		len = ref.len;
+		for (int i = 0; i < len; i++)
+			arr[i] = ref.arr[i];
+	}
+	return *this;
 }
 
-template <typename T>
+template <class T>
 Array<T>::~Array()
 {
-	if (this->length != 0)
-		delete []this->arr;
+	if (len > 0) delete []arr;
 }
 
-template <typename T>
-T& Array<T>::operator[] (unsigned int n)
-{
-	if (n < 0 || n > this->length)
-		throw std::out_of_range("Array index out of bound exception");
-	return this->arr[n];
-}
-
-template <typename T>
-T  Array<T>::operator[] (unsigned int n) const
-{
-	if (n < 0 || n > this->length)
-		throw std::out_of_range("Array index out of bound exception");
-	return this->arr[n];
-}
-
-template <typename T>
+template <class T>
 unsigned int Array<T>::size() const
-{ return this->length; }
+{
+	return len;
+}
+
+template <class T>
+T& Array<T>::operator[](unsigned int idx)
+{
+	if (idx >= len)
+		throw std::out_of_range("Array index out of bound exception");
+	return arr[idx];
+	
+}
+
+template <class T>
+T Array<T>::operator[](unsigned int idx) const 
+{
+	if (idx >= len)
+		throw std::out_of_range("Array index out of bound exception");
+	return arr[idx];
+}
 
 #endif
