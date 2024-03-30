@@ -6,6 +6,22 @@ BitcoinExchange::BitcoinExchange() {
 
 BitcoinExchange::~BitcoinExchange() {}
 
+double BitcoinExchange::exchange(int time, double value) {
+	std::map<int, double>::iterator iter = exchangeRate.begin();
+	if (iter->first > time) { return 0; }
+	else if (iter->first == time) { return iter->second * value; }
+	iter++;
+
+	for (;iter != exchangeRate.end(); iter++) {
+		if (iter->first == time) {
+			return iter->second * value;
+		}
+		if (iter->first > time) { break; }
+	}
+	iter--;
+	return iter->second * value;
+}
+
 void BitcoinExchange::getDataFromDatabase() {
 	std::ifstream database;
 	database.open("data.csv");

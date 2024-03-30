@@ -58,7 +58,7 @@ int changeDateToTime(std::string date) {
 
 	if (!isValidDate(yearNum, monthNum, dayNum)) { return -1; }
 
-	int time = yearNum * 365 + monthNum * 31 + dayNum;
+	int time = yearNum * 400 + monthNum * 31 + dayNum;
 
 	return time;
 }

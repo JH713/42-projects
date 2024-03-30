@@ -20,6 +20,8 @@ public:
 	BitcoinExchange();
 	~BitcoinExchange();
 
+	double exchange(int time, double value);
+
 	class DatabaseFailException : public std::exception {
 	public:
 		const char *what() const throw();

@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
 }
 
 struct InputData {
+	std::string dateString;
 	int time;
 	double value;
 };
@@ -39,13 +40,13 @@ struct InputData {
 void processInput(std::ifstream &input) {
 	std::string line;
 	std::getline(input, line); // 첫 번째 줄은 통과
+	BitcoinExchange exchange;
 	while (std::getline(input, line)) {
 		try {
 			InputData data = parseInputLine(line);
 			(void) data;
-
-			BitcoinExchange exchange;
-			
+			double result = exchange.exchange(data.time, data.value);
+			std::cout << data.dateString << " => " << data.value << " = " << result << std::endl;
 		} catch (const std::exception &e) {
 			std::cout << e.what() <<std::endl;
 		}
@@ -77,6 +78,7 @@ InputData parseInputLine(std::string line) {
 		throw std::runtime_error("Error: Value " + value + " is not between 0 and 1000.");
 	
 	InputData result;
+	result.dateString = date;
 	result.time = time;
 	result.value = val;
 
