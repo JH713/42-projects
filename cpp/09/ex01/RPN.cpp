@@ -47,19 +47,24 @@ int RPN::calculate() {
 }
 
 int RPN::cal(int num1, int num2, std::string op) {
+	long long result = 0;
 	if (op == "+") {
-		return num1 + num2;
+		result = num1 + num2;
 	} else if (op == "-") {
-		return num1 - num2;
+		result = num1 - num2;
 	} else if (op == "*") {
-		return num1 * num2;
+		result = num1 * num2;
 	} else if (op == "/") {
 		if (num2 == 0) {
 			throw std::runtime_error("Error: division by zero");
 		}
-		return num1 / num2;
+		result = num1 / num2;
 	}
-	return 0;
+
+	if (result < INT_MIN || result > INT_MAX)
+		throw std::runtime_error("Error: overflow");
+
+	return result;
 }
 
 int RPN::strToInt(const std::string &str) {

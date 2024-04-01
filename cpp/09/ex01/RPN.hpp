@@ -11,6 +11,7 @@ private:
 	std::string input;
 	std::stack<int> stack;
 
+	RPN();
 	RPN(const RPN &copy);
 	RPN &operator=(const RPN &ref);
 

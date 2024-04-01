@@ -46,6 +46,15 @@ void PmergeMe::printDeque(std::deque<std::pair<int, int> > deque) {
 	std::cout << std::endl;
 }
 
+void PmergeMe::printVector(std::vector<std::pair<int, int> > vector) {
+	std::vector<std::pair<int, int> >::iterator iter;
+	for (iter = vector.begin(); iter != vector.end(); iter++) {
+		std::cout << (*iter).first << " ";
+	}
+
+	std::cout << std::endl;
+}
+
 void PmergeMe::printDequeIndex(std::deque<std::pair<int, int> > deque) {
 	std::deque<std::pair<int, int> >::iterator iter;
 	for (iter = deque.begin(); iter != deque.end(); iter++) {
@@ -59,13 +68,23 @@ void PmergeMe::printResult() {
 	std::cout << "Before: ";
 	printDeque(initialDeque);
 	
+	clock_t start, end;
+	double dequeDuration, vectorDuration;
+	start = clock();
 	std::deque<std::pair<int, int> > sortedDeque = sortDeque(initialDeque);
+	end = clock();
+	dequeDuration = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+
+	start = clock();
+	std::vector<std::pair<int, int> > sortedVector = sortVector(initialVector);
+	end = clock();
+	vectorDuration = (double)(end - start) * 1000.0 / CLOCKS_PER_SEC;
+
 	std::cout << "After: ";
-	std::deque<std::pair<int, int> >::iterator iter;
-	for (iter = sortedDeque.begin(); iter != sortedDeque.end(); iter++) {
-		std::cout << (*iter).first << " ";
-	}
-	std::cout << std::endl;
+	printDeque(sortedDeque);
+
+	std::cout << "Time to process a range of " << initialDeque.size() << " elements with std::deque : " << dequeDuration << " ms" << std::endl; 
+	std::cout << "Time to process a range of " << initialVector.size() << " elements with std::vector : " << vectorDuration << " ms" << std::endl; 
 }
 
 std::deque<std::pair<int, int> > PmergeMe::sortDeque(std::deque<std::pair<int, int> > deque) {
@@ -120,10 +139,12 @@ std::deque<std::pair<int, int> > PmergeMe::sortDeque(std::deque<std::pair<int, i
 
 	while (toInsertIdx < sortedB.size()) {
 		unsigned long startIdx = toInsertIdx + ((pow(2, n) - 1) - 2 * toInsertIdx) ;
-		if (startIdx >= sortedB.size())
-			startIdx = sortedB.size() - 1;
-		unsigned long nextToInsertIdx = startIdx + 1;
 		int mainSize = pow(2, n) - 1; // 내가 봐야할 길이 
+		if (startIdx >= sortedB.size()) {
+			startIdx = sortedB.size() - 1;
+			mainSize = toInsertIdx + sortedB.size();
+		}
+		unsigned long nextToInsertIdx = startIdx + 1;
 
 		while (startIdx >= toInsertIdx) {
 			// sortedB에 있는 startIdx의 친구를 메인 체인에 넣을거임 
@@ -158,3 +179,95 @@ int PmergeMe::binarySearch(std::deque<std::pair<int, int> > deque, int mainSize,
 	}
 	return low; // value가 들어갈 자리
 }
+
+	std::vector<std::pair<int, int> > PmergeMe::sortVector(std::vector<std::pair<int, int> > vector) {
+		if (vector.size() < 2)
+			return vector;
+		std::vector<std::pair<int, int> > b;
+		std::vector<int> aIdx; // a 인덱스 임시저장 
+		std::vector<std::pair<int, int> > a;
+		std::pair<int, int> lastB = std::make_pair(-1, -1);
+
+		if (vector.size() % 2 != 0) {
+			lastB = vector.back();
+			vector.pop_back();		
+		}
+
+		int tempIdx = 0;
+
+		while (vector.size() > 0) {
+			std::pair<int, int> n1 = vector.back();
+			vector.pop_back();
+			std::pair<int, int> n2 = vector.back();
+			vector.pop_back();
+			if (n1.first > n2.first) {
+				aIdx.push_back(n1.second);
+				a.push_back(std::make_pair(n1.first, tempIdx));
+				b.push_back(n2);
+			} else {
+				aIdx.push_back(n2.second);
+				a.push_back(std::make_pair(n2.first, tempIdx));
+				b.push_back(n1);
+			}
+			tempIdx++;
+		}
+
+		std::vector<std::pair<int, int> > sortedA = sortVector(a); //메인 체인
+		std::vector<std::pair<int, int> > sortedB;
+
+		std::vector<std::pair<int, int> >::iterator iter;
+		for (iter = sortedA.begin(); iter != sortedA.end(); iter++) {
+			int idx = (*iter).second;
+			(*iter).second = aIdx[idx];
+			sortedB.push_back(b[idx]);
+		}
+
+		if (lastB.first > 0)
+			sortedB.push_back(lastB);
+
+		sortedA.insert(sortedA.begin(), sortedB.front()); 
+
+		unsigned long toInsertIdx = 1; // 두번째 수부터 다 넣어야함 (순서 상관없이)
+		int n = 2; // 어떤 수부터 넣어줄 지 정할 때 제곱수 
+
+		while (toInsertIdx < sortedB.size()) {
+			unsigned long startIdx = toInsertIdx + ((pow(2, n) - 1) - 2 * toInsertIdx) ;
+			int mainSize = pow(2, n) - 1; // 내가 봐야할 길이 
+			if (startIdx >= sortedB.size()) {
+				startIdx = sortedB.size() - 1;
+				mainSize = toInsertIdx + sortedB.size();
+			}
+			unsigned long nextToInsertIdx = startIdx + 1;
+
+			while (startIdx >= toInsertIdx) {
+				// sortedB에 있는 startIdx의 친구를 메인 체인에 넣을거임 
+				// sortedB[startIdx].first 가 sortedA 앞 mainSize에서 어디에 들어가야하는지 
+				int pos = binarySearch(sortedA, mainSize, sortedB[startIdx].first);
+				sortedA.insert(sortedA.begin() + pos, sortedB[startIdx]);
+				startIdx--;
+			}
+
+			toInsertIdx = nextToInsertIdx;
+			n++;
+		}
+
+		return sortedA;
+	}
+
+	int PmergeMe::binarySearch(std::vector<std::pair<int, int> > vector, int mainSize, int value) {
+			int low = 0;
+	int high = mainSize - 1;
+	int mid = 0;
+
+	while (low <= high) {
+		mid = (low + high) / 2;
+
+		if (value < vector[mid].first)
+			high = mid - 1;
+		else if (value > vector[mid].first)
+			low = mid + 1;
+		else
+			return mid;
+	}
+	return low; // value가 들어갈 자리
+	}

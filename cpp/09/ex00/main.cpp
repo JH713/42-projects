@@ -44,7 +44,6 @@ void processInput(std::ifstream &input) {
 	while (std::getline(input, line)) {
 		try {
 			InputData data = parseInputLine(line);
-			(void) data;
 			double result = exchange.exchange(data.time, data.value);
 			std::cout << data.dateString << " => " << data.value << " = " << result << std::endl;
 		} catch (const std::exception &e) {
