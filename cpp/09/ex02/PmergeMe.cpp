@@ -235,7 +235,7 @@ int PmergeMe::binarySearch(std::deque<std::pair<int, int> > deque, int mainSize,
 			int mainSize = pow(2, n) - 1; // 내가 봐야할 길이 
 			if (startIdx >= sortedB.size()) {
 				startIdx = sortedB.size() - 1;
-				mainSize = toInsertIdx + sortedB.size();
+				mainSize = toInsertIdx + startIdx;
 			}
 			unsigned long nextToInsertIdx = startIdx + 1;
 
